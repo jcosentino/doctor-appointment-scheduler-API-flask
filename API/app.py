@@ -1,5 +1,5 @@
 #Need to modularize the Flask logic
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime
@@ -17,11 +17,13 @@ db = SQLAlchemy(app)
 #DateTime in flask-sqlalchemy is Python datetime. Conversion to MySQL might be necessary
 class User(db.Model):
 	userid = db.Column(db.Integer, primary_key=True, autoincrement=True)
-	username = db.Column(db.String(80), unique=False, nullable=False)
+	username = db.Column(db.String(80), unique=True, nullable=False)
 	password = db.Column(db.String(16), unique=False, nullable=False)
-	email = db.Column(db.String(80), unique=False, nullable=False)
+	email = db.Column(db.String(80), unique=True, nullable=False)
 	createdDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 	lastUpdated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+	def __repr__(self):
+		return '<User %r>' % self.username
 
 class Profile(db.Model):
 	profileid = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -33,22 +35,15 @@ class Profile(db.Model):
 	createdDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 	lastUpdated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 	userid = db.Column(db.Integer, db.ForeignKey('user.userid'), nullable=False)
-	insuranceid = db.Column(db.Integer, db.ForeignKey('insurance.insuranceid'), nullable=False)
-	insurancecompany = db.relationship('Insurace', backref='Profile', lazy=True)
-	groupnumber = db.relationship('Insurace', backref='Profile', lazy=True)
-	memberid = db.relationship('Insurace', backref='Profile', lazy=True)
+	insuranceid = db.Column(db.Integer, db.ForeignKey('insurance.insuranceid'), nullable=True)
+	# insurancecompany = db.relationship('Insurace', backref='Profile', lazy=True)
+	# groupnumber = db.relationship('Insurace', backref='Profile', lazy=True)
+	# memberid = db.relationship('Insurace', backref='Profile', lazy=True)
 
 class Appointment(db.Model):
 	appointmentid = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	apptTime = db.Column(db.DateTime, nullable=True)
 	available = db.Column(db.Boolean, nullable=False, default=True)
-	'''
-	month
-	day
-	year
-	time
-	amOrPm
-	'''
 	createdDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 	lastUpdated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 	userid = db.Column(db.Integer, db.ForeignKey('user.userid'), nullable=True)
@@ -63,17 +58,45 @@ class Insurance(db.Model):
 
 db.create_all()
 
-@app.route('/user/<user_id>', methods=['GET, POST, DELETE'])
+@app.route('/user/<int:user_id>', methods=['GET', 'POST', 'DELETE'])
 def user(user_id):
 	if request.method == 'GET':
-		#return data
-		print(user_id)
-	# else if request.method == 'POST':
-	# 	#modify
-	# elif request.method == 'DELETE':
-	# 	#delete
-	# else:
-	# 	#Error 405 Method Not Allowed
+		user = User.query.filter_by(userid=user_id).first()
+		if user is None: #if query is empty
+			return 'None'
+		id = user.userid
+		username = user.username
+		password = user.password
+		email = user.email
+		createdDate = user.createdDate
+		lastUpdated = user.lastUpdated
+		obj = jsonify(id, username, password, email, createdDate, lastUpdated)
+		return obj
+
+@app.route('/registerUser', methods=['POST'])
+def register():
+	if request.method == 'POST':
+		username = request.args['username']
+		password = request.args['password']
+		email = request.args['email']
+		createdDate = datetime.now()
+		lastUpdated = datetime.now()
+		if User.query.filter_by(username=username).first() is not None:
+			return 'A user already exists with the username!'
+		elif User.query.filter_by(email=email).first() is not None:
+			return 'A user already exists with the email!'
+		else:
+			user = User(username=username, 
+						password=password, 
+						email=email, 
+						createdDate=createdDate, 
+						lastUpdated=lastUpdated)
+			db.session.add(user)
+			db.session.commit()
+			return 'Registration success!'
+		return 'Registration failed!'
+	else:
+		return 'Unsupported HTTP method!'
 
 if __name__ == '__main__':
 	app.run(debug=True)
