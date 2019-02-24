@@ -4,13 +4,15 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime
 import re
-#create_sql =  './Files/create.sql'
+import sqlalchemy
 
 app = Flask(__name__)
 CORS(app) #Need for access from other applications, such as Axios
-#Should create schema if it doesn't already exist
-#unsure how to do this
-#
+
+engine = sqlalchemy.create_engine('mysql://root:8milerun@localhost') # connect to server
+engine.execute("CREATE SCHEMA IF NOT EXISTS `testdb`;") #create db
+engine.execute("USE testdb;") # select new db
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:8milerun@localhost/testdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #Turn off annoying message
 db = SQLAlchemy(app)
@@ -22,8 +24,6 @@ class User(db.Model):
 	email = db.Column(db.String(80), unique=True, nullable=False)
 	createdDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 	lastUpdated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-	def __repr__(self):
-		return '<User %r>' % self.username
 
 class Profile(db.Model):
 	profileid = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -75,10 +75,10 @@ def isProperPassword(password):
 		return True
 	return False
 
-@app.route('/user/<int:user_id>', methods=['GET', 'POST', 'DELETE'])
-def user(user_id):
+@app.route('/user/<int:userid>', methods=['GET', 'POST', 'DELETE'])
+def user(userid):
 	if request.method == 'GET':
-		user = User.query.filter_by(userid=user_id).first()
+		user = User.query.filter_by(userid=userid).first()
 		if user is None: #if query is empty
 			return 'None'
 		id = user.userid
@@ -90,7 +90,7 @@ def user(user_id):
 		obj = jsonify(id, username, password, email, createdDate, lastUpdated)
 		return obj
 	elif request.method == 'POST':
-		user = User.query.filter_by(userid=user_id).first()
+		user = User.query.filter_by(userid=userid).first()
 		if user is None: #if query is empty
 			return 'Cannot update that user! It does not exist!'
 		username = user.username if request.args.get('username') is None \
@@ -115,7 +115,7 @@ def user(user_id):
 		db.session.commit()
 		return 'User account has been updated!'
 	elif request.method == 'DELETE':
-		user = User.query.filter_by(userid=user_id).first()
+		user = User.query.filter_by(userid=userid).first()
 		if user is None: #if query is empty
 			return 'Cannot delete that user! It does not exist!'
 		db.session.delete(user)
@@ -127,6 +127,8 @@ def user(user_id):
 @app.route('/registerUser', methods=['POST'])
 def register():
 	if request.method == 'POST':
+		if len(request.args) is 0:
+			return 'Request was empty!'
 		username = request.args['username']
 		if not isProperUsername(username):
 			return 'Invalid username!'
@@ -154,6 +156,20 @@ def register():
 		return 'Registration failed!'
 	else:
 		return 'Unsupported HTTP method!'
+
+# @app.route('/profile/<int:userid>', methods=['GET', 'POST', 'DELETE'])
+# 	# if len(request.args) is 0:
+# 	# 	return 'Request was empty!'
+
+# @app.route('/createProfile', methods=['POST'])
+
+# @app.route('/appointment/<int:apptid>', methods=['GET', 'POST', 'DELETE'])
+
+# @app.route('/createAppt', method=['POST'])
+
+# @app.route('/insurance/<int:insurid>', methods=['GET', 'POST', 'DELETE'])
+
+# @app.route('/createInsurance', methods=['POST'])
 
 if __name__ == '__main__':
 	app.run(debug=True)
