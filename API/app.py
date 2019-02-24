@@ -362,6 +362,9 @@ def insurance(insuranceid):
 		if insurance is None: #if query is empty
 			return 'Cannot delete that insurance company! It does not exist!'
 		#Remove insuranceid from user profiles
+		profile = Profile.query.filter_by(insuranceid=insuranceid).first()
+		if profile.insuranceid is not None:
+			profile.insuranceid = None
 		db.session.delete(insurance)
 		db.session.commit()
 		return 'Insurance has been deleted!'
