@@ -9,10 +9,12 @@ import sqlalchemy
 app = Flask(__name__)
 CORS(app) #Need for access from other applications, such as Axios
 
-engine = sqlalchemy.create_engine('mysql://root:8milerun@localhost') # connect to server
-engine.execute("CREATE SCHEMA IF NOT EXISTS `testdb`;") #create db
-engine.execute("USE testdb;") # select new db
+#Check if the schema exists and create it if needed
+engine = sqlalchemy.create_engine('mysql://root:8milerun@localhost')
+engine.execute("CREATE SCHEMA IF NOT EXISTS `testdb`;")
+engine.execute("USE testdb;")
 
+#Configure app for testdb connection
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:8milerun@localhost/testdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #Turn off annoying message
 db = SQLAlchemy(app)
