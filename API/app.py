@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime
+import re
 #create_sql =  './Files/create.sql'
 
 app = Flask(__name__)
@@ -14,10 +15,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:8milerun@localhost/testdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #Turn off annoying message
 db = SQLAlchemy(app)
 
-#DateTime in flask-sqlalchemy is Python datetime. Conversion to MySQL might be necessary
 class User(db.Model):
 	userid = db.Column(db.Integer, primary_key=True, autoincrement=True)
-	username = db.Column(db.String(80), unique=True, nullable=False)
+	username = db.Column(db.String(16), unique=True, nullable=False)
 	password = db.Column(db.String(16), unique=False, nullable=False)
 	email = db.Column(db.String(80), unique=True, nullable=False)
 	createdDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -36,9 +36,6 @@ class Profile(db.Model):
 	lastUpdated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 	userid = db.Column(db.Integer, db.ForeignKey('user.userid'), nullable=False)
 	insuranceid = db.Column(db.Integer, db.ForeignKey('insurance.insuranceid'), nullable=True)
-	# insurancecompany = db.relationship('Insurace', backref='Profile', lazy=True)
-	# groupnumber = db.relationship('Insurace', backref='Profile', lazy=True)
-	# memberid = db.relationship('Insurace', backref='Profile', lazy=True)
 
 class Appointment(db.Model):
 	appointmentid = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -58,6 +55,26 @@ class Insurance(db.Model):
 
 db.create_all()
 
+def isProperUsername(username):
+	if len(username) > 16 or len(username) < 3  \
+	   or username.isnumeric() or username[0].isnumeric():
+		return False
+	else:
+		return True
+
+def isProperEmail(email):
+	if len(email.split('@')) < 2 or len(email.split('.')) < 2:
+		return False
+	return True
+
+def isProperPassword(password):
+	if bool(re.search('[A-Z]', password)) and \
+	   bool(re.search('[a-z]', password)) and \
+	   bool(re.search('[0-9]', password)) and \
+	   (len(password) >=6 and len(password) <= 16):
+		return True
+	return False
+
 @app.route('/user/<int:user_id>', methods=['GET', 'POST', 'DELETE'])
 def user(user_id):
 	if request.method == 'GET':
@@ -72,13 +89,53 @@ def user(user_id):
 		lastUpdated = user.lastUpdated
 		obj = jsonify(id, username, password, email, createdDate, lastUpdated)
 		return obj
+	elif request.method == 'POST':
+		user = User.query.filter_by(userid=user_id).first()
+		if user is None: #if query is empty
+			return 'Cannot update that user! It does not exist!'
+		username = user.username if request.args.get('username') is None \
+				or request.args['username'] is "" \
+				else request.args['username']		
+		if not isProperUsername(username):
+			return 'Invalid username!'
+		password = user.password if request.args.get('password') is None \
+				or request.args['password'] is "" \
+				else request.args['password']
+		if not isProperPassword(password):
+			return 'Invalid password!'
+		email = user.email if request.args.get('email') is None \
+				or request.args['email'] is "" \
+				else request.args['email']
+		if not isProperEmail(email):
+			return 'Invalid email!'
+		user.username = username
+		user.password = password
+		user.email = email
+		user.lastUpdated = datetime.now()
+		db.session.commit()
+		return 'User account has been updated!'
+	elif request.method == 'DELETE':
+		user = User.query.filter_by(userid=user_id).first()
+		if user is None: #if query is empty
+			return 'Cannot delete that user! It does not exist!'
+		db.session.delete(user)
+		db.session.commit()
+		return 'User account has been deleted!'
+	else:
+		return 'Unsupported HTTP method!'
 
 @app.route('/registerUser', methods=['POST'])
 def register():
 	if request.method == 'POST':
 		username = request.args['username']
+		if not isProperUsername(username):
+			return 'Invalid username!'
 		password = request.args['password']
+		if not isProperPassword(password):
+			return 'Invalid password!'
 		email = request.args['email']
+		if not isProperEmail(email):
+			return 'Invalid email!'
 		createdDate = datetime.now()
 		lastUpdated = datetime.now()
 		if User.query.filter_by(username=username).first() is not None:
