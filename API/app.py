@@ -95,6 +95,11 @@ def isValidMemberid(memberid):
 def isValidGroupNumber(groupnumber):
 	return True if len(str(groupnumber)) > 2 and len(str(groupnumber)) <= 16 else False
 
+def checkAvailable(available):
+	if available is '1' or available is '0':
+		return True
+	return False
+
 def makeAppointment(userid, appointmentid):
 	return
 
@@ -149,7 +154,6 @@ def user(userid):
 			return 'Cannot delete that user! It does not exist!'
 		profile = Profile.query.filter_by(userid=userid).first()
 		#Need to make appointment available
-		#UPDATE testdb.appointment SET available = '1' JOIN appointment ON appointment.appointmentid = user.apoointmentid;
 		db.session.delete(user)
 		db.session.delete(profile)
 		db.session.commit()
@@ -250,7 +254,7 @@ def profile(userid):
 			appointmentid = request.args['appointmentid']
 			if Appointment.query.filter_by(appointmentid=appointmentid).first() is None:
 				return 'No appointments exist with that appointmentid!'
-			profile.appointmentid = appointmentid
+		profile.appointmentid = appointmentid
 		profile.firstname = firstname
 		profile.lastname = lastname
 		profile.ssn = ssn
@@ -285,7 +289,10 @@ def appointment(appointmentid):
 				else request.args['apptTime']		
 		available = appointment.available if request.args.get('available') is None \
 				or request.args['available'] is "" \
-				else request.args['available']	
+				else request.args['available']
+		if not checkAvailable(available):
+			return 'Wrong format for availability'
+		available = False if available is 0 else True
 		appointment.apptTime = apptTime
 		appointment.available = available
 		appointment.lastUpdated = datetime.now()
@@ -295,6 +302,7 @@ def appointment(appointmentid):
 		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
 		if appointment is None: #if query is empty
 			return 'Cannot delete that appointment! It does not exist!'
+		#Remove appointmentid from user profiles
 		db.session.delete(appointment)
 		db.session.commit()
 		return 'Appointment has been deleted!'
@@ -307,10 +315,9 @@ def createAppt():
 		if len(request.args) is 0:
 			return 'Request was empty!'
 		apptTime = request.args['apptTime']
-		available = True
 		createdDate = datetime.now()
 		lastUpdated = datetime.now()
-		appointment = Appointment(apptTime=apptTime, available=available,
+		appointment = Appointment(apptTime=apptTime,
 								  createdDate=createdDate, lastUpdated=lastUpdated)
 		db.session.add(appointment)
 		db.session.commit()
@@ -319,7 +326,7 @@ def createAppt():
 		return 'Unsupported HTTP method!'
 
 @app.route('/insurance/<int:insuranceid>', methods=['GET', 'POST', 'DELETE'])
-def insurance():
+def insurance(insuranceid):
 	if request.method == 'GET':
 		insurance = Insurance.query.filter_by(insuranceid=insuranceid).first()
 		if insurance is None: #if query is empty
@@ -356,6 +363,7 @@ def insurance():
 		insurance = Insurance.query.filter_by(insuranceid=insuranceid).first()
 		if insurance is None: #if query is empty
 			return 'Cannot delete that insurance company! It does not exist!'
+		#Remove insuranceid from user profiles
 		db.session.delete(insurance)
 		db.session.commit()
 		return 'Insurance has been deleted!'
