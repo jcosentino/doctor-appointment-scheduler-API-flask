@@ -100,15 +100,6 @@ def checkAvailable(available):
 		return True
 	return False
 
-def makeAppointment(userid, appointmentid):
-	return
-
-def cancelAppointment(userid, appointmentid):
-	return
-
-def rescheduleAppointment(userid, oldAppointmentid, newAppointmentid):
-	return
-
 @app.route('/user/<int:userid>', methods=['GET', 'POST', 'DELETE'])
 def user(userid):
 	if request.method == 'GET':
@@ -154,6 +145,10 @@ def user(userid):
 			return 'Cannot delete that user! It does not exist!'
 		profile = Profile.query.filter_by(userid=userid).first()
 		#Need to make appointment available
+		appointment = Appointment.query.filter_by(appointmentid=profile.appointmentid).first()
+		if profile.appointmentid is not None:
+			profile.appointmentid = None
+			appointment.available = True
 		db.session.delete(user)
 		db.session.delete(profile)
 		db.session.commit()
@@ -303,6 +298,9 @@ def appointment(appointmentid):
 		if appointment is None: #if query is empty
 			return 'Cannot delete that appointment! It does not exist!'
 		#Remove appointmentid from user profiles
+		profile = Profile.query.filter_by(appointmentid=appointmentid).first()
+		if profile.appointmentid is not None:
+			profile.appointmentid = None
 		db.session.delete(appointment)
 		db.session.commit()
 		return 'Appointment has been deleted!'
@@ -391,6 +389,57 @@ def createInsurance():
 		return 'Registration success!'
 	else:
 		return 'Unsupported HTTP method!'
+
+@app.route('/makeAppointment/<int:userid>', methods=['POST'])
+def makeAppointment(userid):
+	if request.method == 'POST':
+		appointmentid = request.args['appointmentid']
+		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
+		if appointment.available is False:
+			return 'That apointment is not available!'
+		appointment.available = False
+		profile = Profile.query.filter_by(userid=userid).first()
+		profile.appointmentid = appointmentid
+		db.session.commit()
+		return 'Appointment successfully booked.'
+	return 'Unsupported HTTP method!'
+
+@app.route('/cancelAppointment/<int:userid>', methods=['POST'])
+def cancelAppointment(userid):
+	if request.method == 'POST':
+		appointmentid = request.args['appointmentid']
+		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
+		if appointment.available is True:
+			return 'That appointment is already available.'
+		appointment.available = True
+		profile = Profile.query.filter_by(userid=userid).first()
+		profile.appointmentid = None
+		db.session.commit()
+		return 'Appointment canceled!'
+	return 'Unsupported HTTP method!'
+
+@app.route('/registerInsurance/<int:userid>', methods=['POST'])
+def registerInsurance(userid):
+	if request.method == 'POST':
+		insuranceid = request.args['insuranceid']
+		profile = Profile.query.filter_by(userid=userid).first()
+		if str(profile.insuranceid) == insuranceid:
+			return 'That insurance company is already registered to that user!'
+		profile.insuranceid = insuranceid
+		db.session.commit()
+		return 'Insurance successfully applied.'
+	return 'Unsupported HTTP method!'
+
+@app.route('/deregisterInsurance/<int:userid>', methods=['POST'])
+def deregisterInsurance(userid):
+	if request.method == 'POST':
+		profile = Profile.query.filter_by(userid=userid).first()
+		if profile.insuranceid is None:
+			return 'This user profile does not have any insurance!'
+		profile.insuranceid = None
+		db.session.commit()
+		return 'Insurance successfully deregistered!'
+	return 'Unsupported HTTP method!'
 
 if __name__ == '__main__':
 	app.run(debug=True)
