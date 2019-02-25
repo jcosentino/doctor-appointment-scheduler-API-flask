@@ -7,7 +7,7 @@ import re
 import sqlalchemy
 
 app = Flask(__name__)
-CORS(app) #Need for access from other applications, such as Axios
+CORS(app, resources={r"/*": {"origins": "*"}}) #Need for access from other applications, such as Axios
 
 #Check if the schema exists and create it if needed
 engine = sqlalchemy.create_engine('mysql://root:8milerun@localhost')
@@ -158,16 +158,17 @@ def user(userid):
 
 @app.route('/registerUser', methods=['POST'])
 def registerUser():
+	data = request.get_json()
 	if request.method == 'POST':
-		if len(request.args) is 0:
+		if len(data) is 0:
 			return 'Request was empty!'
-		username = request.args['username']
+		username = data['username']
 		if not isProperUsername(username):
 			return 'Invalid username!'
-		password = request.args['password']
+		password = data['password']
 		if not isProperPassword(password):
 			return 'Invalid password!'
-		email = request.args['email']
+		email = data['email']
 		if not isProperEmail(email):
 			return 'Invalid email!'
 		createdDate = datetime.now()
