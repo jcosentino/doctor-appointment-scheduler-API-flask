@@ -5,6 +5,7 @@ from flask_cors import CORS
 from datetime import datetime
 import re
 import sqlalchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}) #Need for access from other applications, such as Axios
@@ -22,7 +23,7 @@ db = SQLAlchemy(app)
 class User(db.Model):
 	userid = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	username = db.Column(db.String(16), unique=True, nullable=False)
-	password = db.Column(db.String(16), unique=False, nullable=False)
+	password = db.Column(db.String(512), unique=False, nullable=False)
 	email = db.Column(db.String(80), unique=True, nullable=False)
 	createdDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 	lastUpdated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -134,7 +135,7 @@ def user(userid):
 		if not isProperEmail(email):
 			return 'Invalid email!'
 		user.username = username
-		user.password = password
+		user.password =  generate_password_hash(password)
 		user.email = email
 		user.lastUpdated = datetime.now()
 		db.session.commit()
@@ -168,6 +169,7 @@ def registerUser():
 		password = data['password']
 		if not isProperPassword(password):
 			return 'Invalid password!'
+		password = generate_password_hash(password)
 		email = data['email']
 		if not isProperEmail(email):
 			return 'Invalid email!'
@@ -195,6 +197,21 @@ def registerUser():
 		return 'Registration failed!'
 	else:
 		return 'Unsupported HTTP method!'
+
+@app.route('/authenticate', methods=['POST'])
+def authenticate():
+	if request.method == 'POST':
+		username = request.args['username']
+		password = request.args['password']
+		user = User.query.filter_by(username=username).first()
+		if user is None:
+			return 'User does not exist!'
+		if (username != user.username) or \
+		   (check_password_hash(user.password, password) is False):
+		   return 'Authentication failed!'
+		return 'Authentication succeeded!'
+	return 'Unsupported HTTP method!'
+
 
 @app.route('/profile/<int:userid>', methods=['GET', 'POST'])
 def profile(userid):
