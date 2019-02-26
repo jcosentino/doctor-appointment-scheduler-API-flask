@@ -159,7 +159,7 @@ def user(userid):
 
 @app.route('/registerUser', methods=['POST'])
 def registerUser():
-	data = request.get_json()
+	data = request.args
 	if request.method == 'POST':
 		if len(data) is 0:
 			return 'Request was empty!'
@@ -341,6 +341,34 @@ def createAppt():
 	else:
 		return 'Unsupported HTTP method!'
 
+@app.route('/makeAppointment/<int:userid>', methods=['POST'])
+def makeAppointment(userid):
+	if request.method == 'POST':
+		appointmentid = request.args['appointmentid']
+		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
+		if appointment.available is False:
+			return 'That apointment is not available!'
+		appointment.available = False
+		profile = Profile.query.filter_by(userid=userid).first()
+		profile.appointmentid = appointmentid
+		db.session.commit()
+		return 'Appointment successfully booked.'
+	return 'Unsupported HTTP method!'
+
+@app.route('/cancelAppointment/<int:userid>', methods=['POST'])
+def cancelAppointment(userid):
+	if request.method == 'POST':
+		appointmentid = request.args['appointmentid']
+		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
+		if appointment.available is True:
+			return 'That appointment is already available.'
+		appointment.available = True
+		profile = Profile.query.filter_by(userid=userid).first()
+		profile.appointmentid = None
+		db.session.commit()
+		return 'Appointment canceled!'
+	return 'Unsupported HTTP method!'
+
 @app.route('/insurance/<int:insuranceid>', methods=['GET', 'POST', 'DELETE'])
 def insurance(insuranceid):
 	if request.method == 'GET':
@@ -379,10 +407,11 @@ def insurance(insuranceid):
 		insurance = Insurance.query.filter_by(insuranceid=insuranceid).first()
 		if insurance is None: #if query is empty
 			return 'Cannot delete that insurance company! It does not exist!'
-		#Remove insuranceid from user profiles
-		profile = Profile.query.filter_by(insuranceid=insuranceid).first()
-		if profile.insuranceid is not None:
-			profile.insuranceid = None
+		#Remove insuranceid from all user profiles
+		profile = Profile.query.filter_by(insuranceid=insuranceid).all()
+		if profile is not None:
+			for p in profile:
+				p.insuranceid = None
 		db.session.delete(insurance)
 		db.session.commit()
 		return 'Insurance has been deleted!'
@@ -410,34 +439,6 @@ def createInsurance():
 		return 'Registration success!'
 	else:
 		return 'Unsupported HTTP method!'
-
-@app.route('/makeAppointment/<int:userid>', methods=['POST'])
-def makeAppointment(userid):
-	if request.method == 'POST':
-		appointmentid = request.args['appointmentid']
-		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
-		if appointment.available is False:
-			return 'That apointment is not available!'
-		appointment.available = False
-		profile = Profile.query.filter_by(userid=userid).first()
-		profile.appointmentid = appointmentid
-		db.session.commit()
-		return 'Appointment successfully booked.'
-	return 'Unsupported HTTP method!'
-
-@app.route('/cancelAppointment/<int:userid>', methods=['POST'])
-def cancelAppointment(userid):
-	if request.method == 'POST':
-		appointmentid = request.args['appointmentid']
-		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
-		if appointment.available is True:
-			return 'That appointment is already available.'
-		appointment.available = True
-		profile = Profile.query.filter_by(userid=userid).first()
-		profile.appointmentid = None
-		db.session.commit()
-		return 'Appointment canceled!'
-	return 'Unsupported HTTP method!'
 
 @app.route('/registerInsurance/<int:userid>', methods=['POST'])
 def registerInsurance(userid):
