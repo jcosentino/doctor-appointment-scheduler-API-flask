@@ -27,6 +27,7 @@ class User(db.Model):
 	email = db.Column(db.String(80), unique=True, nullable=False)
 	createdDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 	lastUpdated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+	isadmin = db.Column(db.Boolean, nullable=False, default=False)
 
 class Profile(db.Model):
 	profileid = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -113,32 +114,33 @@ def user(userid):
 		email = user.email
 		createdDate = user.createdDate
 		lastUpdated = user.lastUpdated
-		obj = jsonify(id, username, password, email, createdDate, lastUpdated)
+		isadmin = user.isadmin
+		obj = jsonify(id, username, password, email, createdDate, lastUpdated, isadmin)
 		return obj
 	elif request.method == 'POST':
 		user = User.query.filter_by(userid=userid).first()
 		if user is None: #if query is empty
 			return 'Cannot update that user! It does not exist!'
-		username = user.username if request.args.get('username') is None \
-				or request.args['username'] is "" \
-				else request.args['username']		
+		username = user.username if request.form.get('username') is None \
+				or request.form['username'] is "" \
+				else request.form['username']		
 		if not isProperUsername(username):
 			return 'Invalid username!'
-		password = user.password if request.args.get('password') is None \
-				or request.args['password'] is "" \
-				else request.args['password']
+		password = user.password if request.form.get('password') is None \
+				or request.form['password'] is "" \
+				else request.form['password']
 		if not isProperPassword(password):
 			return 'Invalid password!'
-		email = user.email if request.args.get('email') is None \
-				or request.args['email'] is "" \
-				else request.args['email']
+		email = user.email if request.form.get('email') is None \
+				or request.form['email'] is "" \
+				else request.form['email']
 		if not isProperEmail(email):
 			return 'Invalid email!'
 		user.username = username
 		user.password =  generate_password_hash(password)
 		user.email = email
 		user.lastUpdated = datetime.now()
-		db.session.commit()
+		user.isadmin = isadmin
 		return 'User account has been updated!'
 	elif request.method == 'DELETE':
 		user = User.query.filter_by(userid=userid).first()
@@ -159,7 +161,7 @@ def user(userid):
 
 @app.route('/registerUser', methods=['POST'])
 def registerUser():
-	data = request.args
+	data = request.form
 	if request.method == 'POST':
 		if len(data) is 0:
 			return 'Request was empty!'
@@ -201,8 +203,8 @@ def registerUser():
 @app.route('/authenticate', methods=['POST'])
 def authenticate():
 	if request.method == 'POST':
-		username = request.args['username']
-		password = request.args['password']
+		username = request.form['username']
+		password = request.form['password']
 		user = User.query.filter_by(username=username).first()
 		if user is None:
 			return 'User does not exist!'
@@ -212,6 +214,15 @@ def authenticate():
 		return 'Authentication succeeded!'
 	return 'Unsupported HTTP method!'
 
+@app.route('/toggleAdmin/<int:userid>', methods=['POST'])
+def toggleAdmin(userid):
+	if request.method == 'POST':
+		user = User.query.filter_by(userid=userid).first()
+		print(user.isadmin)
+		user.isadmin = True if user.isadmin is False else False
+		db.session.commit()
+		return 'User\'s administrative privileges have been changed!'
+	return 'Unsupported HTTP method!'
 
 @app.route('/profile/<int:userid>', methods=['GET', 'POST'])
 def profile(userid):
