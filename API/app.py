@@ -56,7 +56,7 @@ class Insurance(db.Model):
 	insuranceid = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	insurancecompany = db.Column(db.String(80), unique=False, nullable=False)
 	groupnumber = db.Column(db.String(16), nullable=False)
-	memberid = db.Column(db.String(16), unique=True, nullable=False)
+	memberid = db.Column(db.String(16), unique=False, nullable=False)
 	createdDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 	lastUpdated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
@@ -110,13 +110,11 @@ def user(userid):
 			return 'None'
 		id = user.userid
 		username = user.username
-		password = user.password
 		email = user.email
 		createdDate = user.createdDate
 		lastUpdated = user.lastUpdated
 		isadmin = user.isadmin
-		obj = jsonify(userid=id, username=username, 
-					  password=password, email=email, 
+		obj = jsonify(userid=id, username=username, email=email, 
 					  createdDate=createdDate, lastUpdated=lastUpdated, 
 					  isadmin=isadmin)
 		return obj
@@ -349,6 +347,9 @@ def createAppt():
 		if len(data) is 0:
 			return 'Request was empty!'
 		apptTime = data['apptTime']
+		appointment = Appointment.query.filter_by(apptTime=apptTime).first()
+		if appointment is not None:
+			return 'Cannot make an appointment at that time!'
 		createdDate = datetime.now()
 		lastUpdated = datetime.now()
 		appointment = Appointment(apptTime=apptTime,
@@ -362,7 +363,8 @@ def createAppt():
 @app.route('/makeAppointment/<int:userid>', methods=['POST'])
 def makeAppointment(userid):
 	if request.method == 'POST':
-		appointmentid = request.args['appointmentid']
+		data = request.form
+		appointmentid = data['appointmentid']
 		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
 		if appointment.available is False:
 			return 'That apointment is not available!'
@@ -376,7 +378,8 @@ def makeAppointment(userid):
 @app.route('/cancelAppointment/<int:userid>', methods=['POST'])
 def cancelAppointment(userid):
 	if request.method == 'POST':
-		appointmentid = request.args['appointmentid']
+		data = request.form
+		appointmentid = data['appointmentid']
 		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
 		if appointment.available is True:
 			return 'That appointment is already available.'
@@ -445,9 +448,6 @@ def createInsurance():
 		if len(data) is 0:
 			return 'Request was empty!'
 		insurancecompany = data['insurancecompany']
-		insurance = Insurance.query.filter_by(insurancecompany=insurancecompany).first()
-		if insurance is not None:
-			return 'That insurance company already exists!'
 		groupnumber = data['groupnumber']
 		if not isValidGroupNumber(groupnumber):
 			return 'Invalid Group Number!'
