@@ -323,6 +323,10 @@ def appointment(appointmentid):
 		available = False if available is '0' else True
 		appointment.apptTime = apptTime
 		appointment.available = available
+		if appointment.available is False:
+			profile = Profile.query.filter_by(appointmentid=appointmentid).first()
+			if profile is not None:
+				profile.appointmentid = None
 		appointment.lastUpdated = datetime.now()
 		db.session.commit()
 		return 'Appointment has been updated!'
