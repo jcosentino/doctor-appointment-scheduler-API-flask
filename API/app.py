@@ -115,7 +115,10 @@ def user(userid):
 		createdDate = user.createdDate
 		lastUpdated = user.lastUpdated
 		isadmin = user.isadmin
-		obj = jsonify(id, username, password, email, createdDate, lastUpdated, isadmin)
+		obj = jsonify(userid=id, username=username, 
+					  password=password, email=email, 
+					  createdDate=createdDate, lastUpdated=lastUpdated, 
+					  isadmin=isadmin)
 		return obj
 	elif request.method == 'POST':
 		user = User.query.filter_by(userid=userid).first()
@@ -140,7 +143,6 @@ def user(userid):
 		user.password =  generate_password_hash(password)
 		user.email = email
 		user.lastUpdated = datetime.now()
-		user.isadmin = isadmin
 		return 'User account has been updated!'
 	elif request.method == 'DELETE':
 		user = User.query.filter_by(userid=userid).first()
@@ -241,41 +243,43 @@ def profile(userid):
 		userid = profile.userid
 		insuranceid = profile.insuranceid
 		appointmentid = profile.appointmentid
-		obj = jsonify(profileid, firstname, lastname,
-					  ssn, phonenumber, birthdate,
-					  createdDate, lastUpdated, userid,
-					  insuranceid, appointmentid)
+		obj = jsonify(profileid=profileid, firstname=firstname, 
+					  lastname=lastname, ssn=ssn, phonenumber=phonenumber, 
+					  birthdate=birthdate, createdDate=createdDate, 
+					  lastUpdated=lastUpdated, userid=userid,
+					  insuranceid=insuranceid, appointmentid=appointmentid)
 		return obj
 	elif request.method == 'POST':
+		data = request.form
 		profile = Profile.query.filter_by(userid=userid).first()
 		if profile is None: #if query is empty
 			return 'Cannot update that profile! It does not exist!'
-		firstname = profile.firstname if request.args.get('firstname') is None \
-				or request.args['firstname'] is "" \
-				else request.args['firstname']		
-		lastname = profile.lastname if request.args.get('lastname') is None \
-				or request.args['lastname'] is "" \
-				else request.args['lastname']	
-		ssn = profile.ssn if request.args.get('ssn') is None \
-				or request.args['ssn'] is "" \
-				else request.args['ssn']	
+		firstname = profile.firstname if data.get('firstname') is None \
+				or data['firstname'] is "" \
+				else data['firstname']		
+		lastname = profile.lastname if data.get('lastname') is None \
+				or data['lastname'] is "" \
+				else data['lastname']	
+		ssn = profile.ssn if data.get('ssn') is None \
+				or data['ssn'] is "" \
+				else data['ssn']	
 		if not isValidSsn(ssn):
 			return 'Invalid SSN!'
-		phonenumber = profile.phonenumber if request.args.get('phonenumber') is None \
-				or request.args['phonenumber'] is "" \
-				else request.args['phonenumber']
+		phonenumber = profile.phonenumber if data.get('phonenumber') is None \
+				or data['phonenumber'] is "" \
+				else data['phonenumber']
 		if not isValidPhonenumber(phonenumber):
 			return 'Invalid phone number!'
-		birthdate = profile.birthdate if request.args.get('birthdate') is None \
-				or request.args['birthdate'] is "" \
-				else request.args['birthdate']
-		if request.args.get('insuranceid') is not None:
-			insuranceid = request.args['insuranceid']
+		birthdate = profile.birthdate if data.get('birthdate') is None \
+				or data['birthdate'] is "" \
+				else data['birthdate']
+		if data.get('insuranceid') is not None:
+			insuranceid = data['insuranceid']
 			if Insurance.query.filter_by(insuranceid=insuranceid).first() is None:
 				return 'No insurances exist with that insuranceid!'
 			profile.insuranceid = insuranceid
-		if request.args.get('appointmentid') is not None:
-			appointmentid = request.args['appointmentid']
+		if data.get('appointmentid') is not None:
+			appointmentid = data['appointmentid']
 			if Appointment.query.filter_by(appointmentid=appointmentid).first() is None:
 				return 'No appointments exist with that appointmentid!'
 		profile.appointmentid = appointmentid
@@ -301,22 +305,24 @@ def appointment(appointmentid):
 		available = appointment.available
 		createdDate = appointment.createdDate
 		lastUpdated = appointment.lastUpdated
-		obj = jsonify(appointmentid, apptTime, available,
-					  createdDate, lastUpdated)
+		obj = jsonify(appointmentid=appointmentid, apptTime=apptTime, 
+					  available=available, createdDate=createdDate, 
+					  lastUpdated=lastUpdated)
 		return obj
 	elif request.method == 'POST':
+		data = request.form
 		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
 		if appointment is None: #if query is empty
 			return 'Cannot update that appointment! It does not exist!'
-		apptTime = appointment.apptTime if request.args.get('apptTime') is None \
-				or request.args['apptTime'] is "" \
-				else request.args['apptTime']		
-		available = appointment.available if request.args.get('available') is None \
-				or request.args['available'] is "" \
-				else request.args['available']
+		apptTime = appointment.apptTime if data.get('apptTime') is None \
+				or data['apptTime'] is "" \
+				else data['apptTime']		
+		available = appointment.available if data.get('available') is None \
+				or data['available'] is "" \
+				else data['available']
 		if not checkAvailable(available):
 			return 'Wrong format for availability'
-		available = False if available is 0 else True
+		available = False if available is '0' else True
 		appointment.apptTime = apptTime
 		appointment.available = available
 		appointment.lastUpdated = datetime.now()
@@ -328,7 +334,7 @@ def appointment(appointmentid):
 			return 'Cannot delete that appointment! It does not exist!'
 		#Remove appointmentid from user profiles
 		profile = Profile.query.filter_by(appointmentid=appointmentid).first()
-		if profile.appointmentid is not None:
+		if profile is not None:
 			profile.appointmentid = None
 		db.session.delete(appointment)
 		db.session.commit()
@@ -339,9 +345,10 @@ def appointment(appointmentid):
 @app.route('/createAppt', methods=['POST'])
 def createAppt():
 	if request.method == 'POST':
-		if len(request.args) is 0:
+		data = request.form
+		if len(data) is 0:
 			return 'Request was empty!'
-		apptTime = request.args['apptTime']
+		apptTime = data['apptTime']
 		createdDate = datetime.now()
 		lastUpdated = datetime.now()
 		appointment = Appointment(apptTime=apptTime,
@@ -392,22 +399,24 @@ def insurance(insuranceid):
 		memberid = insurance.memberid
 		createdDate = insurance.createdDate
 		lastUpdated = insurance.lastUpdated
-		obj = jsonify(insuranceid, insurancecompany, groupnumber,
-					  memberid, createdDate, lastUpdated)
+		obj = jsonify(insuranceid=insuranceid, insurancecompany=insurancecompany, 
+					  groupnumber=groupnumber, memberid=memberid, 
+					  createdDate=createdDate, lastUpdated=lastUpdated)
 		return obj
 	elif request.method == 'POST':
+		data = request.form
 		insurance = Insurance.query.filter_by(insuranceid=insuranceid).first()
 		if insurance is None: #if query is empty
 			return 'Cannot update that insurance company! It does not exist!'
-		insurancecompany = insurance.insurancecompany if request.args.get('insurancecompany') is None \
-				or request.args['insurancecompany'] is "" \
-				else request.args['insurancecompany']		
-		groupnumber = insurance.groupnumber if request.args.get('groupnumber') is None \
-				or request.args['groupnumber'] is "" \
-				else request.args['groupnumber']	
-		memberid = insurance.memberid if request.args.get('memberid') is None \
-				or request.args['memberid'] is "" \
-				else request.args['memberid']
+		insurancecompany = insurance.insurancecompany if data.get('insurancecompany') is None \
+				or data['insurancecompany'] is "" \
+				else data['insurancecompany']		
+		groupnumber = insurance.groupnumber if data.get('groupnumber') is None \
+				or data['groupnumber'] is "" \
+				else data['groupnumber']	
+		memberid = insurance.memberid if data.get('memberid') is None \
+				or data['memberid'] is "" \
+				else data['memberid']
 		insurance.insurancecompany = insurancecompany
 		insurance.groupnumber = groupnumber
 		insurance.memberid = memberid
@@ -432,13 +441,17 @@ def insurance(insuranceid):
 @app.route('/createInsurance', methods=['POST'])
 def createInsurance():
 	if request.method == 'POST':
-		if len(request.args) is 0:
+		data = request.form
+		if len(data) is 0:
 			return 'Request was empty!'
-		insurancecompany = request.args['insurancecompany']
-		groupnumber = request.args['groupnumber']
+		insurancecompany = data['insurancecompany']
+		insurance = Insurance.query.filter_by(insurancecompany=insurancecompany).first()
+		if insurance is not None:
+			return 'That insurance company already exists!'
+		groupnumber = data['groupnumber']
 		if not isValidGroupNumber(groupnumber):
 			return 'Invalid Group Number!'
-		memberid = request.args['memberid']
+		memberid = data['memberid']
 		if not isValidMemberid(memberid):
 			return 'Invalid Member ID!'
 		createdDate = datetime.now()
@@ -454,7 +467,8 @@ def createInsurance():
 @app.route('/registerInsurance/<int:userid>', methods=['POST'])
 def registerInsurance(userid):
 	if request.method == 'POST':
-		insuranceid = request.args['insuranceid']
+		data = request.form
+		insuranceid = data['insuranceid']
 		profile = Profile.query.filter_by(userid=userid).first()
 		if str(profile.insuranceid) == insuranceid:
 			return 'That insurance company is already registered to that user!'
