@@ -47,14 +47,14 @@ class Profile(db.Model):
 
 class Appointment(db.Model):
 	appointmentid = db.Column(db.Integer, primary_key=True, autoincrement=True)
-	apptTime = db.Column(db.DateTime, nullable=True)
+	apptTime = db.Column(db.DateTime, unique=True, nullable=True)
 	available = db.Column(db.Boolean, nullable=False, default=True)
 	createdDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 	lastUpdated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
 class Insurance(db.Model):
 	insuranceid = db.Column(db.Integer, primary_key=True, autoincrement=True)
-	insurancecompany = db.Column(db.String(80), unique=False, nullable=False)
+	insurancecompany = db.Column(db.String(80), unique=True, nullable=False)
 	groupnumber = db.Column(db.String(16), nullable=False)
 	memberid = db.Column(db.String(16), unique=False, nullable=False)
 	createdDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -203,8 +203,9 @@ def registerUser():
 @app.route('/authenticate', methods=['POST'])
 def authenticate():
 	if request.method == 'POST':
-		username = request.form['username']
-		password = request.form['password']
+		data = request.form
+		username = data['username']
+		password = data['password']
 		user = User.query.filter_by(username=username).first()
 		if user is None:
 			return 'User does not exist!'
@@ -222,6 +223,15 @@ def toggleAdmin(userid):
 		user.isadmin = True if user.isadmin is False else False
 		db.session.commit()
 		return 'User\'s administrative privileges have been changed!'
+	return 'Unsupported HTTP method!'
+
+@app.route('/getUserId/<username>', methods=['GET'])
+def getUserId(username):
+	if request.method == 'GET':
+		user = User.query.filter_by(username=username).first()
+		if user is None:
+			return 'User does not exist!'
+		return jsonify(userid=user.userid)
 	return 'Unsupported HTTP method!'
 
 @app.route('/profile/<int:userid>', methods=['GET', 'POST'])
@@ -394,6 +404,16 @@ def cancelAppointment(userid):
 		return 'Appointment canceled!'
 	return 'Unsupported HTTP method!'
 
+@app.route('/findAppointment', methods=['GET'])
+def findAppointment():
+	if request.method == 'GET':
+		data = request.form
+		appointment = Appointment.query.filter_by(apptTime=data['apptTime']).first()
+		if appointment is None:
+			return 'That appointment does not exist!'
+		return jsonify(appointmentid=appointment.appointmentid)
+	return 'Unsupported HTTP method!'
+
 @app.route('/insurance/<int:insuranceid>', methods=['GET', 'POST', 'DELETE'])
 def insurance(insuranceid):
 	if request.method == 'GET':
@@ -490,6 +510,16 @@ def deregisterInsurance(userid):
 		profile.insuranceid = None
 		db.session.commit()
 		return 'Insurance successfully deregistered!'
+	return 'Unsupported HTTP method!'
+
+@app.route('/findInsurance', methods=['GET'])
+def findInsurance():
+	if request.method == 'GET':
+		data = request.form
+		insurance = Insurance.query.filter_by(insurancecompany=data['insurancecompany']).first()
+		if insurance is None:
+			return 'That insurance company does not exist!'
+		return jsonify(insuranceid=insurance.insuranceid)
 	return 'Unsupported HTTP method!'
 
 if __name__ == '__main__':
