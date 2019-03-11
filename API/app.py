@@ -288,7 +288,8 @@ def profile(userid):
 			profile.insuranceid = insuranceid
 		if data.get('appointmentid') is not None:
 			appointmentid = data['appointmentid']
-			if Appointment.query.filter_by(appointmentid=appointmentid).first() is None:
+			appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
+			if appointment is None:
 				return 'No appointments exist with that appointmentid!'
 		profile.appointmentid = appointmentid
 		profile.firstname = firstname
