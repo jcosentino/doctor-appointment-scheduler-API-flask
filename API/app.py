@@ -108,7 +108,7 @@ def checkAvailable(available):
 		return True
 	return False
 
-@app.route('/user/<int:userid>', methods=['GET', 'POST', 'DELETE'])
+@app.route('/user/<int:userid>', methods=['GET', 'PUT', 'DELETE'])
 def user(userid):
 	if request.method == 'GET':
 		user = User.query.filter_by(userid=userid).first()
@@ -124,7 +124,7 @@ def user(userid):
 					  createdDate=createdDate, lastUpdated=lastUpdated, 
 					  isadmin=isadmin)
 		return obj
-	elif request.method == 'POST':
+	elif request.method == 'PUT':
 		user = User.query.filter_by(userid=userid).first()
 		if user is None: #if query is empty
 			return 'Cannot update that user! It does not exist!'
@@ -221,9 +221,9 @@ def authenticate():
 		return 'Authentication succeeded!'
 	return 'Unsupported HTTP method!'
 
-@app.route('/toggleAdmin/<int:userid>', methods=['POST'])
+@app.route('/toggleAdmin/<int:userid>', methods=['PUT'])
 def toggleAdmin(userid):
-	if request.method == 'POST':
+	if request.method == 'PUT':
 		user = User.query.filter_by(userid=userid).first()
 		print(user.isadmin)
 		user.isadmin = True if user.isadmin is False else False
@@ -240,7 +240,7 @@ def getUserId(username):
 		return jsonify(userid=user.userid)
 	return 'Unsupported HTTP method!'
 
-@app.route('/profile/<int:userid>', methods=['GET', 'POST'])
+@app.route('/profile/<int:userid>', methods=['GET', 'PUT'])
 def profile(userid):
 	if request.method == 'GET':
 		profile = Profile.query.filter_by(userid=userid).first()
@@ -263,7 +263,7 @@ def profile(userid):
 					  lastUpdated=lastUpdated, userid=userid,
 					  insuranceid=insuranceid, appointmentid=appointmentid)
 		return obj
-	elif request.method == 'POST':
+	elif request.method == 'PUT':
 		data = request.form
 		profile = Profile.query.filter_by(userid=userid).first()
 		if profile is None: #if query is empty
@@ -309,7 +309,7 @@ def profile(userid):
 	else:
 		return 'Unsupported HTTP method!'
 
-@app.route('/appointment/<int:appointmentid>', methods=['GET', 'POST', 'DELETE'])
+@app.route('/appointment/<int:appointmentid>', methods=['GET', 'PUT', 'DELETE'])
 def appointment(appointmentid):
 	if request.method == 'GET':
 		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
@@ -324,7 +324,7 @@ def appointment(appointmentid):
 					  available=available, createdDate=createdDate, 
 					  lastUpdated=lastUpdated)
 		return obj
-	elif request.method == 'POST':
+	elif request.method == 'PUT':
 		data = request.form
 		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
 		if appointment is None: #if query is empty
@@ -381,9 +381,9 @@ def createAppt():
 	else:
 		return 'Unsupported HTTP method!'
 
-@app.route('/makeAppointment/<int:userid>', methods=['POST'])
+@app.route('/makeAppointment/<int:userid>', methods=['PUT'])
 def makeAppointment(userid):
-	if request.method == 'POST':
+	if request.method == 'PUT':
 		data = request.form
 		appointmentid = data['appointmentid']
 		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
@@ -396,9 +396,9 @@ def makeAppointment(userid):
 		return 'Appointment successfully booked.'
 	return 'Unsupported HTTP method!'
 
-@app.route('/cancelAppointment/<int:userid>', methods=['POST'])
+@app.route('/cancelAppointment/<int:userid>', methods=['PUT'])
 def cancelAppointment(userid):
-	if request.method == 'POST':
+	if request.method == 'PUT':
 		data = request.form
 		appointmentid = data['appointmentid']
 		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
@@ -495,9 +495,9 @@ def createInsurance():
 	else:
 		return 'Unsupported HTTP method!'
 
-@app.route('/registerInsurance/<int:userid>', methods=['POST'])
+@app.route('/registerInsurance/<int:userid>', methods=['PUT'])
 def registerInsurance(userid):
-	if request.method == 'POST':
+	if request.method == 'PUT':
 		data = request.form
 		insuranceid = data['insuranceid']
 		profile = Profile.query.filter_by(userid=userid).first()
@@ -508,9 +508,9 @@ def registerInsurance(userid):
 		return 'Insurance successfully applied.'
 	return 'Unsupported HTTP method!'
 
-@app.route('/deregisterInsurance/<int:userid>', methods=['POST'])
+@app.route('/deregisterInsurance/<int:userid>', methods=['PUT'])
 def deregisterInsurance(userid):
-	if request.method == 'POST':
+	if request.method == 'PUT':
 		profile = Profile.query.filter_by(userid=userid).first()
 		if profile.insuranceid is None:
 			return 'This user profile does not have any insurance!'
