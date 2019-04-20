@@ -20,12 +20,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:8milerun@localhost/testdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #Turn off annoying message
 db = SQLAlchemy(app)
 
-#from Models import user, profile, appointment, insurance
-# from Models.user import User
-# from Models.profile import Profile
-# from Models.appointment import Appointment
-# from Models.insurance import Insurance
-
 class User(db.Model):
 	userid = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	username = db.Column(db.String(16), unique=True, nullable=False)
