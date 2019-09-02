@@ -405,9 +405,9 @@ def cancelAppointment(userid):
 		return 'Appointment canceled!'
 	return 'Unsupported HTTP method!'
 
-@app.route('/findAppointment', methods=['GET'])
+@app.route('/findAppointment', methods=['PUT'])
 def findAppointment():
-	if request.method == 'GET':
+	if request.method == 'PUT':
 		data = request.form
 		appointment = Appointment.query.filter_by(apptTime=data['apptTime']).first()
 		if appointment is None:
@@ -513,9 +513,9 @@ def deregisterInsurance(userid):
 		return 'Insurance successfully deregistered!'
 	return 'Unsupported HTTP method!'
 
-@app.route('/findInsurance', methods=['GET'])
+@app.route('/findInsurance', methods=['PUT'])
 def findInsurance():
-	if request.method == 'GET':
+	if request.method == 'PUT':
 		data = request.form
 		insurance = Insurance.query.filter_by(insurancecompany=data['insurancecompany']).first()
 		if insurance is None:
