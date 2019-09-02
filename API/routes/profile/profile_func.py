@@ -66,6 +66,9 @@ def profile(userid):
 			appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
 			if appointment is None:
 				return 'No appointments exist with that appointmentid!'
+			availability = appointment.available
+			if availability is False:
+				appointmentid = profile.appointmentid
 		profile.appointmentid = appointmentid
 		profile.firstname = firstname
 		profile.lastname = lastname
