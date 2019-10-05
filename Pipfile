@@ -12,7 +12,6 @@ flask-cors = "*"
 sqlalchemy = "*"
 flask-sqlalchemy = "*"
 datetime = "*"
-werkzeug = "*"
 
 [requires]
 python_version = "3.7"
