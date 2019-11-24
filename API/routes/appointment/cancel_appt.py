@@ -5,9 +5,9 @@ from db.models.profile import Profile
 
 cancel_appt = Blueprint('cancel_appt', __name__)
 
-@cancel_appt.route('/cancelAppointment/<int:userid>', methods=['PUT'])
+@cancel_appt.route('/cancelAppointment/<int:userid>', methods=['PATCH'])
 def cancelAppointment(userid):
-	if request.method == 'PUT':
+	if request.method == 'PATCH':
 		data = request.form
 		appointmentid = data['appointmentid']
 		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()

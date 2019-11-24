@@ -5,9 +5,9 @@ from db.models.profile import Profile
 
 make_appt = Blueprint('make_appt', __name__)
 
-@make_appt.route('/makeAppointment/<int:userid>', methods=['PUT'])
+@make_appt.route('/makeAppointment/<int:userid>', methods=['PATCH'])
 def makeAppointment(userid):
-	if request.method == 'PUT':
+	if request.method == 'PATCH':
 		data = request.form
 		appointmentid = data['appointmentid']
 		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()

@@ -5,9 +5,9 @@ from db.models.profile import Profile
 
 deregister_insr = Blueprint('deregister_insr', __name__)
 
-@deregister_insr.route('/deregisterInsurance/<int:userid>', methods=['PUT'])
+@deregister_insr.route('/deregisterInsurance/<int:userid>', methods=['PATCH'])
 def deregisterInsurance(userid):
-	if request.method == 'PUT':
+	if request.method == 'PATCH':
 		profile = Profile.query.filter_by(userid=userid).first()
 		if profile.insuranceid is None:
 			return 'This user profile does not have any insurance!'
