@@ -29,25 +29,24 @@ def user(userid):
 		user = User.query.filter_by(userid=userid).first()
 		if user is None: #if query is empty
 			return 'Cannot update that user! It does not exist!'
-		username = user.username if request.form.get('username') is None \
-				or request.form['username'] is "" \
-				else request.form['username']		
+		data = request.get_json()
+		username = user.username if data.get('username') is None \
+			else data.get('username')
 		if not isProperUsername(username):
 			return 'Invalid username!'
-		password = user.password if request.form.get('password') is None \
-				or request.form['password'] is "" \
-				else request.form['password']
+		password = user.password if data.get('password') is None \
+			else data.get('password')
 		if not isProperPassword(password):
 			return 'Invalid password!'
-		email = user.email if request.form.get('email') is None \
-				or request.form['email'] is "" \
-				else request.form['email']
+		email = user.email if data.get('email') is None \
+			else data.get('email')
 		if not isProperEmail(email):
 			return 'Invalid email!'
 		user.username = username
 		user.password =  generate_password_hash(password)
 		user.email = email
 		user.lastUpdated = datetime.now()
+		db.session.commit()
 		return 'User account has been updated!'
 	elif request.method == 'DELETE':
 		user = User.query.filter_by(userid=userid).first()

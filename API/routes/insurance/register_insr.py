@@ -8,8 +8,8 @@ register_insr = Blueprint('register_insr', __name__)
 @register_insr.route('/registerInsurance/<int:userid>', methods=['PATCH'])
 def registerInsurance(userid):
 	if request.method == 'PATCH':
-		data = request.form
-		insuranceid = data['insuranceid']
+		data = request.get_json()
+		insuranceid = data.get('insuranceid')
 		profile = Profile.query.filter_by(userid=userid).first()
 		if str(profile.insuranceid) == insuranceid:
 			return 'That insurance company is already registered to that user!'

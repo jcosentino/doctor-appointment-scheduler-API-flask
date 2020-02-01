@@ -7,8 +7,8 @@ find_insr = Blueprint('find_insr', __name__)
 @find_insr.route('/findInsurance', methods=['PUT'])
 def findInsurance():
 	if request.method == 'PUT':
-		data = request.form
-		insurance = Insurance.query.filter_by(insurancecompany=data['insurancecompany']).first()
+		data = request.get_json()
+		insurance = Insurance.query.filter_by(insurancecompany=data.get('insurancecompany')).first()
 		if insurance is None:
 			return 'That insurance company does not exist!'
 		return jsonify(insuranceid=insurance.insuranceid)

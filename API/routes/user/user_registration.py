@@ -10,18 +10,18 @@ user_registration = Blueprint('user_registration', __name__)
 
 @user_registration.route('/registerUser', methods=['POST'])
 def registerUser():
-	data = request.form
+	data = request.get_json()
 	if request.method == 'POST':
 		if len(data) is 0:
 			return 'Request was empty!'
-		username = data['username']
+		username = data.get('username')
 		if not isProperUsername(username):
 			return 'Invalid username!'
-		password = data['password']
+		password = data.get('password')
 		if not isProperPassword(password):
 			return 'Invalid password!'
 		password = generate_password_hash(password)
-		email = data['email']
+		email = data.get('email')
 		if not isProperEmail(email):
 			return 'Invalid email!'
 		createdDate = datetime.now()

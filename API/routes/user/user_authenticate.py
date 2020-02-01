@@ -7,9 +7,9 @@ user_authenticate = Blueprint('user_authenticate', __name__)
 @user_authenticate.route('/authenticate', methods=['POST'])
 def authenticate():
 	if request.method == 'POST':
-		data = request.form
-		username = data['username']
-		password = data['password']
+		data = request.get_json()
+		username = data.get('username')
+		password = data.get('password')
 		user = User.query.filter_by(username=username).first()
 		if user is None:
 			return 'User does not exist!'

@@ -23,19 +23,16 @@ def insurance(insuranceid):
 					  createdDate=createdDate, lastUpdated=lastUpdated)
 		return obj
 	elif request.method == 'POST':
-		data = request.form
+		data = request.get_json()
 		insurance = Insurance.query.filter_by(insuranceid=insuranceid).first()
 		if insurance is None: #if query is empty
 			return 'Cannot update that insurance company! It does not exist!'
 		insurancecompany = insurance.insurancecompany if data.get('insurancecompany') is None \
-				or data['insurancecompany'] is "" \
-				else data['insurancecompany']		
+			else data['insurancecompany']		
 		groupnumber = insurance.groupnumber if data.get('groupnumber') is None \
-				or data['groupnumber'] is "" \
-				else data['groupnumber']	
+			else data['groupnumber']	
 		memberid = insurance.memberid if data.get('memberid') is None \
-				or data['memberid'] is "" \
-				else data['memberid']
+			else data['memberid']
 		insurance.insurancecompany = insurancecompany
 		insurance.groupnumber = groupnumber
 		insurance.memberid = memberid

@@ -33,36 +33,31 @@ def profile(userid):
 					  insuranceid=insuranceid, appointmentid=appointmentid)
 		return obj
 	elif request.method == 'PUT':
-		data = request.form
+		data = request.get_json()
 		profile = Profile.query.filter_by(userid=userid).first()
 		if profile is None: #if query is empty
 			return 'Cannot update that profile! It does not exist!'
 		firstname = profile.firstname if data.get('firstname') is None \
-				or data['firstname'] is "" \
-				else data['firstname']		
+			else data.get('firstname')
 		lastname = profile.lastname if data.get('lastname') is None \
-				or data['lastname'] is "" \
-				else data['lastname']	
+			else data.get('lastname')
 		ssn = profile.ssn if data.get('ssn') is None \
-				or data['ssn'] is "" \
-				else data['ssn']	
+			else data['ssn']	
 		if not isValidSsn(ssn):
 			return 'Invalid SSN!'
 		phonenumber = profile.phonenumber if data.get('phonenumber') is None \
-				or data['phonenumber'] is "" \
-				else data['phonenumber']
+			else data['phonenumber']
 		if not isValidPhonenumber(phonenumber):
 			return 'Invalid phone number!'
 		birthdate = profile.birthdate if data.get('birthdate') is None \
-				or data['birthdate'] is "" \
-				else data['birthdate']
+			else data['birthdate']
 		if data.get('insuranceid') is not None:
-			insuranceid = data['insuranceid']
+			insuranceid = data.get('insuranceid')
 			if Insurance.query.filter_by(insuranceid=insuranceid).first() is None:
 				return 'No insurances exist with that insuranceid!'
 			profile.insuranceid = insuranceid
 		if data.get('appointmentid') is not None:
-			appointmentid = data['appointmentid']
+			appointmentid = data.get('appointmentid')
 			appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
 			if appointment is None:
 				return 'No appointments exist with that appointmentid!'

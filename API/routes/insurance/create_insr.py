@@ -9,14 +9,14 @@ create_insr = Blueprint('create_insr', __name__)
 @create_insr.route('/createInsurance', methods=['POST'])
 def createInsurance():
 	if request.method == 'POST':
-		data = request.form
+		data = request.get_json()
 		if len(data) is 0:
 			return 'Request was empty!'
-		insurancecompany = data['insurancecompany']
-		groupnumber = data['groupnumber']
+		insurancecompany = data.get('insurancecompany')
+		groupnumber = data.get('groupnumber')
 		if not isValidGroupNumber(groupnumber):
 			return 'Invalid Group Number!'
-		memberid = data['memberid']
+		memberid = data.get('memberid')
 		if not isValidMemberid(memberid):
 			return 'Invalid Member ID!'
 		createdDate = datetime.now()

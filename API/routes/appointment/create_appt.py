@@ -8,10 +8,10 @@ create_appt = Blueprint('create_appt', __name__)
 @create_appt.route('/createAppt', methods=['POST'])
 def createAppt():
 	if request.method == 'POST':
-		data = request.form
+		data = request.get_json()
 		if len(data) is 0:
 			return 'Request was empty!'
-		apptTime = data['apptTime']
+		apptTime = data.get('apptTime')
 		appointment = Appointment.query.filter_by(apptTime=apptTime).first()
 		if appointment is not None:
 			return 'Cannot make an appointment at that time!'
