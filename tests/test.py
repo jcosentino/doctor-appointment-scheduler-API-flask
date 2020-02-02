@@ -1,5 +1,5 @@
 import pytest
-from routes.validation import isProperUsername, \
+from API.routes.validation import isProperUsername, \
                               isProperEmail, \
                               isProperPassword, \
                               isValidSsn, \
