@@ -13,6 +13,10 @@ flask-cors = "*"
 sqlalchemy = "*"
 flask-sqlalchemy = "*"
 datetime = "*"
+coverage = "*"
+pylint = "*"
+pytest = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.8"
