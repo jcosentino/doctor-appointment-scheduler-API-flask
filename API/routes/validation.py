@@ -2,13 +2,13 @@ import re
 
 def isProperUsername(username):
     if len(username) > 16 or len(username) < 3  \
-    or username.isnumeric() or username[0].isnumeric():
+    or username[0].isnumeric() or re.search('[^a-zA-Z0-9]', username):
         return False
     else:
         return True
     
 def isProperEmail(email):
-    if len(email.split('@')) < 2 or len(email.split('.')) < 2:
+    if len(email.split('@')) < 2:
         return False
     return True
 
@@ -33,7 +33,10 @@ def isValidMemberid(memberid):
         else False
 
 def isValidGroupNumber(groupnumber):
-    return True if len(str(groupnumber)) > 2 and len(str(groupnumber)) <= 16 else False
+    return True if len(str(groupnumber)) > 2 and \
+                   len(str(groupnumber)) <= 16 and \
+                    str(groupnumber).isnumeric() \
+                else False
 
 def checkAvailable(available):
     if available is '1' or available is '0':
