@@ -12,7 +12,7 @@ def authenticate():
 		password = data.get('password')
 		user = User.query.filter_by(username=username).first()
 		if user is None:
-			return 'User does not exist!'
+			return jsonify('User does not exist!')
 		if (username != user.username) or \
 		   (check_password_hash(user.password, password) is False):
 		   return jsonify('Authentication failed!')

@@ -14,7 +14,7 @@ def user(userid):
 	if request.method == 'GET':
 		user = User.query.filter_by(userid=userid).first()
 		if user is None: #if query is empty
-			return 'None'
+			return jsonify('None')
 		id = user.userid
 		username = user.username
 		email = user.email
