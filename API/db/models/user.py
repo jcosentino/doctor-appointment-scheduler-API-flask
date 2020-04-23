@@ -9,3 +9,5 @@ class User(db.Model):
 	createdDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 	lastUpdated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 	isadmin = db.Column(db.Boolean, nullable=False, default=False)
+	sec_ques_num = db.Column(db.Integer, nullable=False)
+	sec_ques_ans = db.Column(db.String(512), unique=False, nullable=False)

@@ -2,6 +2,8 @@ import pytest
 from API.routes.validation import isProperUsername, \
                               isProperEmail, \
                               isProperPassword, \
+                              isProperSecurityQuestion, \
+                              isProperSecurityAnswer, \
                               isValidSsn, \
                               isValidPhonenumber, \
                               isValidMemberid, \
@@ -39,6 +41,31 @@ def test_isProperPassword():
     assert isProperPassword(invalid_password3) is False
     assert isProperPassword(invalid_password4) is False
     assert isProperPassword(invalid_password5) is False
+
+def test_isProperSecurityQuestion():
+    valid_id1 = 1
+    valid_id2 = 2
+    valid_id3 = 3
+    invalid_id1 = 0 # too low
+    invalid_id2 = 4 # too high
+    assert isProperSecurityQuestion(valid_id1) is True
+    assert isProperSecurityQuestion(valid_id2) is True
+    assert isProperSecurityQuestion(valid_id3) is True
+    assert isProperSecurityQuestion(invalid_id1) is False
+    assert isProperSecurityQuestion(invalid_id2) is False
+
+def test_isProperSecurityAnswer():
+    valid_answer1 = 'Here is a valid answer'
+    invalid_answer1 = '' # no text
+    invalid_answer2 = 'abc' # too short
+    invalid_answer3 = 'abcdefghijklmnopqrstuvwxyz1234567890\
+                       abcdefghijklmnopqrstuvwxyz1234567890\
+                       abcdefghijklmnopqrstuvwxyz1234567890\
+                       abcdefghijklmnopqrstuvwxyz1234567890' # too long
+    assert isProperSecurityAnswer(valid_answer1) is True
+    assert isProperSecurityAnswer(invalid_answer1) is False
+    assert isProperSecurityAnswer(invalid_answer2) is False
+    assert isProperSecurityAnswer(invalid_answer3) is False
 
 def test_isValidSsn():
     valid_ssn1 = '123456789'

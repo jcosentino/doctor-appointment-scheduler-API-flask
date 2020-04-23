@@ -2,9 +2,10 @@ from flask import Blueprint, request, jsonify
 from db.global_db import db
 from db.models.user import User
 from db.models.profile import Profile
-from ..validation import isProperUsername, isProperPassword, isProperEmail
+from ..validation import isProperUsername, isProperPassword, isProperEmail, isProperSecurityAnswer
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import random
 
 user_registration = Blueprint('user_registration', __name__)
 
@@ -12,7 +13,7 @@ user_registration = Blueprint('user_registration', __name__)
 def registerUser():
 	data = request.get_json()
 	if request.method == 'POST':
-		if len(data) is 0:
+		if len(data) == 0:
 			return jsonify('Request was empty!')
 		username = data.get('username')
 		if not isProperUsername(username):
@@ -24,6 +25,11 @@ def registerUser():
 		email = data.get('email')
 		if not isProperEmail(email):
 			return jsonify('Invalid email!')
+		sec_ques_num = random.randint(1, 3)
+		sec_ques_ans = data.get('sec_ques_ans')
+		if not isProperSecurityAnswer(sec_ques_ans):
+			return jsonify('Security answer must be at between and including 6 and 26 characters.')
+		sec_ques_ans = generate_password_hash(sec_ques_ans)
 		createdDate = datetime.now()
 		lastUpdated = datetime.now()
 		if User.query.filter_by(username=username).first() is not None:
@@ -35,7 +41,9 @@ def registerUser():
 						password=password, 
 						email=email, 
 						createdDate=createdDate, 
-						lastUpdated=lastUpdated)
+						lastUpdated=lastUpdated,
+						sec_ques_num=sec_ques_num,
+						sec_ques_ans=sec_ques_ans)
 			db.session.add(user)
 			db.session.commit()
 			userid = User.query.filter_by(username=username).first().userid

@@ -4,7 +4,7 @@ from db.models.user import User
 from db.models.profile import Profile
 from db.models.appointment import Appointment
 from ..validation import isProperUsername, isProperPassword, isProperEmail
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 from datetime import datetime
 
 user_func = Blueprint('user_func', __name__)
@@ -21,9 +21,10 @@ def user(userid):
 		createdDate = user.createdDate
 		lastUpdated = user.lastUpdated
 		isadmin = user.isadmin
+		sec_ques_num = user.sec_ques_num
 		obj = jsonify(userid=id, username=username, email=email, 
 					  createdDate=createdDate, lastUpdated=lastUpdated, 
-					  isadmin=isadmin)
+					  isadmin=isadmin, sec_ques_num=sec_ques_num)
 		return obj
 	elif request.method == 'PUT':
 		user = User.query.filter_by(userid=userid).first()

@@ -10,6 +10,7 @@ from routes.user.user_registration import user_registration
 from routes.user.user_authenticate import user_authenticate
 from routes.user.toggle_admin import toggle_admin
 from routes.user.get_user_id import get_user_id
+from routes.user.security_question import security_question
 from routes.profile.profile_func import profile_func
 from routes.appointment.appointment_func import appointment_func
 from routes.appointment.create_appt import create_appt
@@ -43,6 +44,7 @@ app.register_blueprint(user_registration)
 app.register_blueprint(user_authenticate)
 app.register_blueprint(toggle_admin)
 app.register_blueprint(get_user_id)
+app.register_blueprint(security_question)
 app.register_blueprint(profile_func)
 app.register_blueprint(appointment_func)
 app.register_blueprint(create_appt)

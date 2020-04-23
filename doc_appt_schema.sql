@@ -41,7 +41,7 @@ CREATE TABLE `appointment` (
 
 LOCK TABLES `appointment` WRITE;
 /*!40000 ALTER TABLE `appointment` DISABLE KEYS */;
-INSERT INTO `appointment` VALUES (1,'2005-01-09 10:32:18',0,'2019-09-02 04:46:47','2019-09-02 04:46:47');
+INSERT INTO `appointment` VALUES (1,'2005-01-09 10:32:18',1,'2020-04-23 15:31:04','2020-04-23 15:31:04');
 /*!40000 ALTER TABLE `appointment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -59,8 +59,7 @@ CREATE TABLE `insurance` (
   `memberid` varchar(16) NOT NULL,
   `createdDate` datetime NOT NULL,
   `lastUpdated` datetime NOT NULL,
-  PRIMARY KEY (`insuranceid`),
-  UNIQUE KEY `insurancecompany` (`insurancecompany`)
+  PRIMARY KEY (`insuranceid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -70,7 +69,7 @@ CREATE TABLE `insurance` (
 
 LOCK TABLES `insurance` WRITE;
 /*!40000 ALTER TABLE `insurance` DISABLE KEYS */;
-INSERT INTO `insurance` VALUES (1,'Nowhere LLC','234Woa','5012332312','2019-09-02 04:46:56','2019-09-02 04:46:56');
+INSERT INTO `insurance` VALUES (1,'Nowhere LLC','234000','5012332312','2020-04-23 15:31:07','2020-04-23 15:31:07');
 /*!40000 ALTER TABLE `insurance` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -109,7 +108,7 @@ CREATE TABLE `profile` (
 
 LOCK TABLES `profile` WRITE;
 /*!40000 ALTER TABLE `profile` DISABLE KEYS */;
-INSERT INTO `profile` VALUES (1,'First','Last','123456789','7185551234','2005-01-09 10:32:18','2019-09-02 04:46:42','2019-09-02 04:51:26',1,1,NULL);
+INSERT INTO `profile` VALUES (1,'First','Last','123456789','7181231234','2005-01-09 10:32:18','2020-04-23 15:30:48','2020-04-23 15:31:11',1,1,1);
 /*!40000 ALTER TABLE `profile` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -128,6 +127,8 @@ CREATE TABLE `user` (
   `createdDate` datetime NOT NULL,
   `lastUpdated` datetime NOT NULL,
   `isadmin` tinyint(1) NOT NULL,
+  `sec_ques_num` int(11) NOT NULL,
+  `sec_ques_ans` varchar(512) NOT NULL,
   PRIMARY KEY (`userid`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
@@ -140,7 +141,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'person','pbkdf2:sha256:50000$Le2YbvfO$e84c8d3d48a30d7838e25aeb0cdac470349e4f48525bc021c2c93a0c9ce4bea9','example@example.com','2019-09-02 04:46:42','2019-09-02 04:46:42',0);
+INSERT INTO `user` VALUES (1,'person','pbkdf2:sha256:150000$veW0QLwC$0e0d488fc101e5926e81dbd6e7ca7c1e21f1fa4395387a9dffa52a5c06a84bb6','example@example.com','2020-04-23 15:30:48','2020-04-23 15:30:48',0,1,'pbkdf2:sha256:150000$VqTrbVmb$f67d18b8e3dd37f05b3dbf1f97e0786bd74c44c250dc4bb8c93427378412fdaa');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -153,4 +154,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-02 23:05:52
+-- Dump completed on 2020-04-23 15:31:35

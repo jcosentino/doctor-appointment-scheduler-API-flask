@@ -20,16 +20,26 @@ def isProperPassword(password):
         return True
     return False
 
+def isProperSecurityQuestion(id):
+    if id >= 1 and id <= 3:
+        return True
+    return False
+
+def isProperSecurityAnswer(answer):
+    if len(answer) >= 6 and len(answer) <= 80:
+        return True
+    return False
+
 def isValidSsn(ssn):
-    return True if len(str(ssn)) is 9 and ssn.isnumeric() \
+    return True if len(str(ssn)) == 9 and ssn.isnumeric() \
         else False
 
 def isValidPhonenumber(pnumber):
-    return True if len(pnumber) is 10 and pnumber.isnumeric() \
+    return True if len(pnumber) == 10 and pnumber.isnumeric() \
         else False
 
 def isValidMemberid(memberid):
-    return True if len(memberid) is 10 and memberid.isnumeric() \
+    return True if len(memberid) == 10 and memberid.isnumeric() \
         else False
 
 def isValidGroupNumber(groupnumber):
@@ -39,6 +49,6 @@ def isValidGroupNumber(groupnumber):
                 else False
 
 def checkAvailable(available):
-    if available is '1' or available is '0':
+    if available == '1' or available == '0':
         return True
     return False
