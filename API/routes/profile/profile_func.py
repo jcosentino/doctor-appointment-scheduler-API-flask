@@ -14,7 +14,7 @@ def profile(userid):
 	if request.method == 'GET':
 		profile = Profile.query.filter_by(userid=userid).first()
 		if profile is None: #if query is empty
-			return 'None'
+			return jsonify('None')
 		profileid = profile.profileid
 		firstname = profile.firstname
 		lastname = profile.lastname
@@ -36,7 +36,7 @@ def profile(userid):
 		data = request.get_json()
 		profile = Profile.query.filter_by(userid=userid).first()
 		if profile is None: #if query is empty
-			return 'Cannot update that profile! It does not exist!'
+			return jsonify('Cannot update that profile! It does not exist!')
 		firstname = profile.firstname if data.get('firstname') is None \
 			else data.get('firstname')
 		lastname = profile.lastname if data.get('lastname') is None \
@@ -44,23 +44,23 @@ def profile(userid):
 		ssn = profile.ssn if data.get('ssn') is None \
 			else data['ssn']	
 		if not isValidSsn(ssn):
-			return 'Invalid SSN!'
+			return jsonify('Invalid SSN!')
 		phonenumber = profile.phonenumber if data.get('phonenumber') is None \
 			else data['phonenumber']
 		if not isValidPhonenumber(phonenumber):
-			return 'Invalid phone number!'
+			return jsonify('Invalid phone number!')
 		birthdate = profile.birthdate if data.get('birthdate') is None \
 			else data['birthdate']
 		if data.get('insuranceid') is not None:
 			insuranceid = data.get('insuranceid')
 			if Insurance.query.filter_by(insuranceid=insuranceid).first() is None:
-				return 'No insurances exist with that insuranceid!'
+				return jsonify('No insurances exist with that insuranceid!')
 			profile.insuranceid = insuranceid
 		if data.get('appointmentid') is not None:
 			appointmentid = data.get('appointmentid')
 			appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
 			if appointment is None:
-				return 'No appointments exist with that appointmentid!'
+				return jsonify('No appointments exist with that appointmentid!')
 			availability = appointment.available
 			if availability is False:
 				appointmentid = profile.appointmentid
@@ -72,6 +72,6 @@ def profile(userid):
 		profile.birthdate = birthdate
 		profile.lastUpdated = datetime.now()
 		db.session.commit()
-		return 'User profile has been updated!'
+		return jsonify('User profile has been updated!')
 	else:
-		return 'Unsupported HTTP method!'
+		return jsonify('Unsupported HTTP method!')

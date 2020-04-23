@@ -10,6 +10,6 @@ def findInsurance():
 		data = request.get_json()
 		insurance = Insurance.query.filter_by(insurancecompany=data.get('insurancecompany')).first()
 		if insurance is None:
-			return 'That insurance company does not exist!'
+			return jsonify('That insurance company does not exist!')
 		return jsonify(insuranceid=insurance.insuranceid)
-	return 'Unsupported HTTP method!'
+	return jsonify('Unsupported HTTP method!')

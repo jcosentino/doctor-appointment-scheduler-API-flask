@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from db.global_db import db
 from db.models.appointment import Appointment
 from db.models.profile import Profile
@@ -12,10 +12,10 @@ def cancelAppointment(userid):
 		appointmentid = data.get('appointmentid')
 		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
 		if appointment.available is True:
-			return 'That appointment is already available.'
+			return jsonify('That appointment is already available.')
 		appointment.available = True
 		profile = Profile.query.filter_by(userid=userid).first()
 		profile.appointmentid = None
 		db.session.commit()
-		return 'Appointment canceled!'
-	return 'Unsupported HTTP method!'
+		return jsonify('Appointment canceled!')
+	return jsonify('Unsupported HTTP method!')

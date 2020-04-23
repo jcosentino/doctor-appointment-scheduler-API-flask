@@ -28,30 +28,30 @@ def user(userid):
 	elif request.method == 'PUT':
 		user = User.query.filter_by(userid=userid).first()
 		if user is None: #if query is empty
-			return 'Cannot update that user! It does not exist!'
+			return jsonify('Cannot update that user! It does not exist!')
 		data = request.get_json()
 		username = user.username if data.get('username') is None \
 			else data.get('username')
 		if not isProperUsername(username):
-			return 'Invalid username!'
+			return jsonify('Invalid username!')
 		password = user.password if data.get('password') is None \
 			else data.get('password')
 		if not isProperPassword(password):
-			return 'Invalid password!'
+			return jsonify('Invalid password!')
 		email = user.email if data.get('email') is None \
 			else data.get('email')
 		if not isProperEmail(email):
-			return 'Invalid email!'
+			return jsonify('Invalid email!')
 		user.username = username
 		user.password =  generate_password_hash(password)
 		user.email = email
 		user.lastUpdated = datetime.now()
 		db.session.commit()
-		return 'User account has been updated!'
+		return jsonify('User account has been updated!')
 	elif request.method == 'DELETE':
 		user = User.query.filter_by(userid=userid).first()
 		if user is None: #if query is empty
-			return 'Cannot delete that user! It does not exist!'
+			return jsonify('Cannot delete that user! It does not exist!')
 		profile = Profile.query.filter_by(userid=userid).first()
 		#Need to make appointment available
 		appointment = Appointment.query.filter_by(appointmentid=profile.appointmentid).first()
@@ -61,6 +61,6 @@ def user(userid):
 		db.session.delete(user)
 		db.session.delete(profile)
 		db.session.commit()
-		return 'User account has been deleted!'
+		return jsonify('User account has been deleted!')
 	else:
-		return 'Unsupported HTTP method!'
+		return jsonify('Unsupported HTTP method!')

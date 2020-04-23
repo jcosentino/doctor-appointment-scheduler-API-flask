@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from db.global_db import db
 from db.models.appointment import Appointment
 from db.models.profile import Profile
@@ -12,10 +12,10 @@ def makeAppointment(userid):
 		appointmentid = data.get('appointmentid')
 		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
 		if appointment.available is False:
-			return 'That apointment is not available!'
+			return jsonify('That apointment is not available!')
 		appointment.available = False
 		profile = Profile.query.filter_by(userid=userid).first()
 		profile.appointmentid = appointmentid
 		db.session.commit()
-		return 'Appointment successfully booked.'
-	return 'Unsupported HTTP method!'
+		return jsonify('Appointment successfully booked.')
+	return jsonify('Unsupported HTTP method!')

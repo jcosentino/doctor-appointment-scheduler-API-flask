@@ -11,7 +11,7 @@ def insurance(insuranceid):
 	if request.method == 'GET':
 		insurance = Insurance.query.filter_by(insuranceid=insuranceid).first()
 		if insurance is None: #if query is empty
-			return 'None'
+			return jsonify('None')
 		insuranceid = insurance.insuranceid
 		insurancecompany = insurance.insurancecompany
 		groupnumber = insurance.groupnumber
@@ -26,7 +26,7 @@ def insurance(insuranceid):
 		data = request.get_json()
 		insurance = Insurance.query.filter_by(insuranceid=insuranceid).first()
 		if insurance is None: #if query is empty
-			return 'Cannot update that insurance company! It does not exist!'
+			return jsonify('Cannot update that insurance company! It does not exist!')
 		insurancecompany = insurance.insurancecompany if data.get('insurancecompany') is None \
 			else data['insurancecompany']		
 		groupnumber = insurance.groupnumber if data.get('groupnumber') is None \
@@ -38,11 +38,11 @@ def insurance(insuranceid):
 		insurance.memberid = memberid
 		insurance.lastUpdated = datetime.now()
 		db.session.commit()
-		return 'Insurance has been updated!'
+		return jsonify('Insurance has been updated!')
 	elif request.method == 'DELETE':
 		insurance = Insurance.query.filter_by(insuranceid=insuranceid).first()
 		if insurance is None: #if query is empty
-			return 'Cannot delete that insurance company! It does not exist!'
+			return jsonify('Cannot delete that insurance company! It does not exist!')
 		#Remove insuranceid from all user profiles
 		profile = Profile.query.filter_by(insuranceid=insuranceid).all()
 		if profile is not None:
@@ -50,6 +50,6 @@ def insurance(insuranceid):
 				p.insuranceid = None
 		db.session.delete(insurance)
 		db.session.commit()
-		return 'Insurance has been deleted!'
+		return jsonify('Insurance has been deleted!')
 	else:
-		return 'Unsupported HTTP method!'
+		return jsonify('Unsupported HTTP method!')

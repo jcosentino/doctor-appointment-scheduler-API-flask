@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from db.global_db import db
 from db.models.insurance import Insurance
 from ..validation import isValidGroupNumber, isValidMemberid
@@ -11,20 +11,20 @@ def createInsurance():
 	if request.method == 'POST':
 		data = request.get_json()
 		if len(data) is 0:
-			return 'Request was empty!'
+			return jsonify('Request was empty!')
 		insurancecompany = data.get('insurancecompany')
 		groupnumber = data.get('groupnumber')
 		if not isValidGroupNumber(groupnumber):
-			return 'Invalid Group Number!'
+			return jsonify('Invalid Group Number!')
 		memberid = data.get('memberid')
 		if not isValidMemberid(memberid):
-			return 'Invalid Member ID!'
+			return jsonify('Invalid Member ID!')
 		createdDate = datetime.now()
 		lastUpdated = datetime.now()
 		insurance = Insurance(insurancecompany=insurancecompany, groupnumber=groupnumber,
 							  memberid=memberid, createdDate=createdDate, lastUpdated=lastUpdated)
 		db.session.add(insurance)
 		db.session.commit()
-		return 'Registration success!'
+		return jsonify('Registration success!')
 	else:
-		return 'Unsupported HTTP method!'
+		return jsonify('Unsupported HTTP method!')

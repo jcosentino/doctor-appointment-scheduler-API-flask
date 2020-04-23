@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from db.global_db import db
 from db.models.insurance import Insurance
 from db.models.profile import Profile
@@ -10,8 +10,8 @@ def deregisterInsurance(userid):
 	if request.method == 'PATCH':
 		profile = Profile.query.filter_by(userid=userid).first()
 		if profile.insuranceid is None:
-			return 'This user profile does not have any insurance!'
+			return jsonify('This user profile does not have any insurance!')
 		profile.insuranceid = None
 		db.session.commit()
-		return 'Insurance successfully deregistered!'
-	return 'Unsupported HTTP method!'
+		return jsonify('Insurance successfully deregistered!')
+	return jsonify('Unsupported HTTP method!')

@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from db.global_db import db
 from db.models.insurance import Insurance
 from db.models.profile import Profile
@@ -12,8 +12,8 @@ def registerInsurance(userid):
 		insuranceid = data.get('insuranceid')
 		profile = Profile.query.filter_by(userid=userid).first()
 		if str(profile.insuranceid) == insuranceid:
-			return 'That insurance company is already registered to that user!'
+			return jsonify('That insurance company is already registered to that user!')
 		profile.insuranceid = insuranceid
 		db.session.commit()
-		return 'Insurance successfully applied.'
-	return 'Unsupported HTTP method!'
+		return jsonify('Insurance successfully applied.')
+	return jsonify('Unsupported HTTP method!')

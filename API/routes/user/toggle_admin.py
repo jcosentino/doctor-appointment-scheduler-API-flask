@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from db.global_db import db
 from db.models.user import User
 
@@ -11,5 +11,5 @@ def toggleAdmin(userid):
 		print(user.isadmin)
 		user.isadmin = True if user.isadmin is False else False
 		db.session.commit()
-		return 'User\'s administrative privileges have been changed!'
-	return 'Unsupported HTTP method!'
+		return jsonify('User\'s administrative privileges have been changed!')
+	return jsonify('Unsupported HTTP method!')

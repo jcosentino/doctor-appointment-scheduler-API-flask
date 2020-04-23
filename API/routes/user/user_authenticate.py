@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from db.models.user import User
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -15,6 +15,6 @@ def authenticate():
 			return 'User does not exist!'
 		if (username != user.username) or \
 		   (check_password_hash(user.password, password) is False):
-		   return 'Authentication failed!'
-		return 'Authentication succeeded!'
-	return 'Unsupported HTTP method!'
+		   return jsonify('Authentication failed!')
+		return jsonify('Authentication succeeded!')
+	return jsonify('Unsupported HTTP method!')

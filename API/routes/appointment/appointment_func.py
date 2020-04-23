@@ -12,7 +12,7 @@ def appointment(appointmentid):
 	if request.method == 'GET':
 		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
 		if appointment is None: #if query is empty
-			return 'None'
+			return jsonify('None')
 		appointmentid = appointment.appointmentid
 		apptTime = appointment.apptTime
 		available = appointment.available
@@ -26,13 +26,13 @@ def appointment(appointmentid):
 		data = request.get_json()
 		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
 		if appointment is None: #if query is empty
-			return 'Cannot update that appointment! It does not exist!'
+			return jsonify('Cannot update that appointment! It does not exist!')
 		apptTime = appointment.apptTime if data.get('apptTime') is None \
 			else data.get('apptTime') # YYYY-MM-DD HH:MM:SS
 		available = appointment.available if data.get('available') is None \
 			else data.get('available') # Needs to be 1 for True, 0 for False
 		if not checkAvailable(available):
-			return 'Wrong format for availability'
+			return jsonify('Wrong format for availability')
 		available = False if available is '0' else True
 		appointment.apptTime = apptTime
 		appointment.available = available
@@ -42,17 +42,17 @@ def appointment(appointmentid):
 				profile.appointmentid = None
 		appointment.lastUpdated = datetime.now()
 		db.session.commit()
-		return 'Appointment has been updated!'
+		return jsonify('Appointment has been updated!')
 	elif request.method == 'DELETE':
 		appointment = Appointment.query.filter_by(appointmentid=appointmentid).first()
 		if appointment is None: #if query is empty
-			return 'Cannot delete that appointment! It does not exist!'
+			return jsonify('Cannot delete that appointment! It does not exist!')
 		#Remove appointmentid from user profiles
 		profile = Profile.query.filter_by(appointmentid=appointmentid).first()
 		if profile is not None:
 			profile.appointmentid = None
 		db.session.delete(appointment)
 		db.session.commit()
-		return 'Appointment has been deleted!'
+		return jsonify('Appointment has been deleted!')
 	else:
-		return 'Unsupported HTTP method!'
+		return jsonify('Unsupported HTTP method!')

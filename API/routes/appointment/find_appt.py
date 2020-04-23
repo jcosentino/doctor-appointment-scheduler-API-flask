@@ -10,6 +10,6 @@ def findAppointment():
 		data = request.get_json()
 		appointment = Appointment.query.filter_by(apptTime=data.get('apptTime')).first()
 		if appointment is None:
-			return 'That appointment does not exist!'
+			return jsonify('That appointment does not exist!')
 		return jsonify(appointmentid=appointment.appointmentid)
-	return 'Unsupported HTTP method!'
+	return jsonify('Unsupported HTTP method!')

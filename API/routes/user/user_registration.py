@@ -13,23 +13,23 @@ def registerUser():
 	data = request.get_json()
 	if request.method == 'POST':
 		if len(data) is 0:
-			return 'Request was empty!'
+			return jsonify('Request was empty!')
 		username = data.get('username')
 		if not isProperUsername(username):
-			return 'Invalid username!'
+			return jsonify('Invalid username!')
 		password = data.get('password')
 		if not isProperPassword(password):
-			return 'Invalid password!'
+			return jsonify('Invalid password!')
 		password = generate_password_hash(password)
 		email = data.get('email')
 		if not isProperEmail(email):
-			return 'Invalid email!'
+			return jsonify('Invalid email!')
 		createdDate = datetime.now()
 		lastUpdated = datetime.now()
 		if User.query.filter_by(username=username).first() is not None:
-			return 'A user already exists with the username!'
+			return jsonify('A user already exists with the username!')
 		elif User.query.filter_by(email=email).first() is not None:
-			return 'A user already exists with the email!'
+			return jsonify('A user already exists with the email!')
 		else:
 			user = User(username=username, 
 						password=password, 
@@ -44,7 +44,7 @@ def registerUser():
 							  userid=userid)
 			db.session.add(profile)
 			db.session.commit()
-			return 'Registration success!'
-		return 'Registration failed!'
+			return jsonify('Registration success!')
+		return jsonify('Registration failed!')
 	else:
-		return 'Unsupported HTTP method!'
+		return jsonify('Unsupported HTTP method!')
