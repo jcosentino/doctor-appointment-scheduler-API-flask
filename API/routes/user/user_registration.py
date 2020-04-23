@@ -2,10 +2,10 @@ from flask import Blueprint, request, jsonify
 from db.global_db import db
 from db.models.user import User
 from db.models.profile import Profile
-from ..validation import isProperUsername, isProperPassword, isProperEmail, isProperSecurityAnswer
+from ..validation import isProperUsername, isProperPassword, isProperEmail,\
+						 isProperSecurityQuestion, isProperSecurityAnswer
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-import random
 
 user_registration = Blueprint('user_registration', __name__)
 
@@ -25,10 +25,12 @@ def registerUser():
 		email = data.get('email')
 		if not isProperEmail(email):
 			return jsonify('Invalid email!')
-		sec_ques_num = random.randint(1, 3)
+		sec_ques_num = data.get('sec_ques_num')
+		if not isProperSecurityQuestion(sec_ques_num):
+			return jsonify('Security question must be between and including 1 and 3.')
 		sec_ques_ans = data.get('sec_ques_ans')
 		if not isProperSecurityAnswer(sec_ques_ans):
-			return jsonify('Security answer must be at between and including 6 and 26 characters.')
+			return jsonify('Security answer must be between and including 6 and 26 characters.')
 		sec_ques_ans = generate_password_hash(sec_ques_ans)
 		createdDate = datetime.now()
 		lastUpdated = datetime.now()
