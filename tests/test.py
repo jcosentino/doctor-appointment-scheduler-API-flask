@@ -46,13 +46,11 @@ def test_isProperSecurityQuestion():
     valid_id1 = 1
     valid_id2 = 2
     valid_id3 = 3
-    invalid_id1 = 0 # too low
-    invalid_id2 = 4 # too high
+    invalid_id1 = 'test' # wrong type
     assert isProperSecurityQuestion(valid_id1) is True
     assert isProperSecurityQuestion(valid_id2) is True
     assert isProperSecurityQuestion(valid_id3) is True
     assert isProperSecurityQuestion(invalid_id1) is False
-    assert isProperSecurityQuestion(invalid_id2) is False
 
 def test_isProperSecurityAnswer():
     valid_answer1 = 'Here is a valid answer'

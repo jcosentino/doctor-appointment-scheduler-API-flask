@@ -5,31 +5,7 @@ from db.models.user import User
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
-question1 = 'Where were you born?'
-question2 = 'What is your favorite movie?'
-question3 = 'What is your favorite book?'
-ERROR_QUESTION = 'Error'
-
-def getQuestion(id):
-    if id == 1:
-        return question1
-    elif id == 2:
-        return question2
-    elif id == 3:
-        return question3
-    else:
-        return ERROR_QUESTION
-
 security_question = Blueprint('security_question', __name__)
-
-@security_question.route('/getSecQues/<int:sec_id>', methods=['GET'])
-def getSecQues(sec_id):
-      if request.method == 'GET':
-            if isProperSecurityQuestion(sec_id):
-                  return jsonify(getQuestion(sec_id))
-            else:
-                  return jsonify(ERROR_QUESTION)
-      return jsonify('Unsupported HTTP method!')
 
 @security_question.route('/changeSecQues/<int:userid>', methods=['PATCH'])
 def changeSecQues(userid):
@@ -42,7 +18,7 @@ def changeSecQues(userid):
                   db.session.commit()
                   return jsonify('Security question has been updated!')
             else:
-                  return jsonify(ERROR_QUESTION)
+                  return jsonify('Security question could not be updated.')
       else:
             return jsonify('Unsupported HTTP method!')
 
@@ -57,7 +33,7 @@ def changeSecAns(userid):
                   db.session.commit()
                   return jsonify('Security answer has been updated!')
             else:
-                  return jsonify(ERROR_QUESTION)
+                  return jsonify('Security answer could not be updated.')
       else:
             return jsonify('Unsupported HTTP method!')
 

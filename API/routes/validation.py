@@ -21,7 +21,7 @@ def isProperPassword(password):
     return False
 
 def isProperSecurityQuestion(id):
-    if id >= 1 and id <= 3:
+    if str(id).isnumeric():
         return True
     return False
 
