@@ -11,7 +11,6 @@ def authenticate():
 		data = request.get_json()
 		username = data.get('username')
 		if isProperEmail(username):
-			# username = User.query.filter_by(email=username).first().username
 			user = User.query.filter_by(email=username).first()
 		else:
 			user = User.query.filter_by(username=username).first()
