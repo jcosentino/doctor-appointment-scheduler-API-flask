@@ -13,6 +13,6 @@ def getUserId():
 		else:
 			user = User.query.filter_by(username=input).first()
 		if user is None:
-			return 'User does not exist!'
+			return jsonify('User does not exist!')
 		return jsonify(userid=user.userid)
 	return jsonify('Unsupported HTTP method!')
