@@ -8,7 +8,8 @@ def isProperUsername(username):
         return True
     
 def isProperEmail(email):
-    if len(email.split('@')) < 2 or (email != re.sub(r'[^a-zA-Z0-9@.]', "", email)):
+    if str(email) == 'None' or len(email.split('@')) < 2 or \
+        (email != re.sub(r'[^a-zA-Z0-9@.]', "", email)):
         return False
     return True
 
