@@ -24,9 +24,13 @@ def test_isProperUsername():
 
 def test_isProperEmail():
     valid_email1 = 'test@example.com'
-    invalid_email = 'testexample.com' # no @ symbol
+    invalid_email1 = 'testexample.com' # no @ symbol
+    invalid_email2 = 'test!*%#@example.com' # invalid symbols
+    invalid_email3 = 'test!@example.com' # invalid symbol
     assert isProperEmail(valid_email1) is True
-    assert isProperEmail(invalid_email) is False
+    assert isProperEmail(invalid_email1) is False
+    assert isProperEmail(invalid_email2) is False
+    assert isProperEmail(invalid_email3) is False
 
 def test_isProperPassword():
     valid_password1 = 'Password1'
