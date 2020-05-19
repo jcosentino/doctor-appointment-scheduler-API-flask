@@ -3,6 +3,7 @@ from flask_cors import CORS
 from db.schema.schema_creation import check_schema
 from db.schema.db_connection import initConnections
 from db.global_db import db
+import argparse
 
 #Routes
 from routes.user.user_func import user_func
@@ -23,15 +24,28 @@ from routes.insurance.register_insr import register_insr
 from routes.insurance.deregister_insr import deregister_insr
 from routes.insurance.find_insr import find_insr
 
+# cli variables
+parser = argparse.ArgumentParser()
+parser.add_argument('--username')
+parser.add_argument('--password')
+parser.add_argument('--hostname')
+parser.add_argument('--schema_name')
+args = parser.parse_args()
+username = args.username
+password = args.password
+hostname = args.hostname
+schema_name = args.schema_name
+var_args = [username, password, hostname, schema_name]
+
 app = Flask(__name__)
 #Need for access from other applications, such as Axios
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 #Check if the schema exists and create it if needed
-check_schema()
+check_schema(*var_args)
 
 #Configure app for testdb connection
-initConnections(app)
+initConnections(app, *var_args)
 
 #Create database tables
 db.init_app(app)
