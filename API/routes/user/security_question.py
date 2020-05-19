@@ -26,7 +26,7 @@ def changeSecAns(userid):
             sec_ques_ans = request.get_json().get('sec_ques_ans')
             user = User.query.filter_by(userid=userid).first()
             if isProperSecurityAnswer(sec_ques_ans):
-                  user.sec_ques_ans = generate_password_hash(sec_ques_ans)
+                  user.sec_ques_ans = generate_password_hash(sec_ques_ans, 'sha256')
                   user.lastUpdated = datetime.now()
                   db.session.commit()
                   return jsonify('Security answer has been updated!')
@@ -48,7 +48,7 @@ def forgotPassword():
             elif isProperPassword(password) is False:
                   return jsonify('Invalid password!')
             else:
-                  user.password = generate_password_hash(password)
+                  user.password = generate_password_hash(password, 'sha256')
                   user.lastUpdated = datetime.now()
                   db.session.commit()
                   return jsonify('Password has been updated!') 

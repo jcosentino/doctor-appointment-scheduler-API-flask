@@ -38,7 +38,7 @@ def user(userid):
 		if not isProperPassword(password):
 			return jsonify('Invalid password!')
 		user.email = email
-		user.password =  generate_password_hash(password)
+		user.password =  generate_password_hash(password, 'sha256')
 		user.lastUpdated = datetime.now()
 		db.session.commit()
 		return jsonify('User account has been updated!')
