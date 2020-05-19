@@ -1,6 +1,5 @@
 import pytest
-from API.routes.validation import isProperUsername, \
-                              isProperEmail, \
+from API.routes.validation import isProperEmail, \
                               isProperPassword, \
                               isProperSecurityQuestion, \
                               isProperSecurityAnswer, \
@@ -9,24 +8,6 @@ from API.routes.validation import isProperUsername, \
                               isValidMemberid, \
                               isValidGroupNumber, \
                               checkAvailable \
-
-def test_isProperUsername():
-    valid_username1 = 'user123'
-    invalid_username1 = 'user12345678901234567890' # too long
-    invalid_username2 = 'ab' # too short
-    invalid_username3 = '1user123' # begins withnumeric
-    invalid_username4 = 'user123!#' # special characters
-    invalid_username5 = 'User123' # capital letter
-    invalid_username6 = 'usEr123' # capital letter
-    invalid_username7 = '' # empty
-    assert isProperUsername(valid_username1) is True
-    assert isProperUsername(invalid_username1) is False
-    assert isProperUsername(invalid_username2) is False
-    assert isProperUsername(invalid_username3) is False
-    assert isProperUsername(invalid_username4) is False
-    assert isProperUsername(invalid_username5) is False
-    assert isProperUsername(invalid_username6) is False
-    assert isProperUsername(invalid_username7) is False
 
 def test_isProperEmail():
     valid_email1 = 'test@example.com'

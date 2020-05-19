@@ -1,13 +1,5 @@
 import re
 
-def isProperUsername(username):
-    if username is None: return False
-    usernameLength = len(username)
-    pattern = '[^a-z0-9]'
-    return (usernameLength <= 16 and usernameLength >= 3
-            and username[0].isnumeric() is False
-            and re.search(pattern, username) is None)
-    
 def isProperEmail(email):
     return not (str(email) == 'None' or len(email.split('@')) < 2 or
         (email != re.sub(r'[^a-zA-Z0-9@.]', "", email)))

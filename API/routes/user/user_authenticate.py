@@ -9,11 +9,8 @@ user_authenticate = Blueprint('user_authenticate', __name__)
 def authenticate():
 	if request.method == 'POST':
 		data = request.get_json()
-		username = data.get('username')
-		if isProperEmail(username):
-			user = User.query.filter_by(email=username).first()
-		else:
-			user = User.query.filter_by(username=username).first()
+		email = data.get('email')
+		user = User.query.filter_by(email=email).first()
 		password = data.get('password')
 		if user is None or (check_password_hash(user.password, password) is False):
 			return jsonify('Authentication failed!')

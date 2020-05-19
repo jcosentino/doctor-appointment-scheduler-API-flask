@@ -8,10 +8,7 @@ get_user_id = Blueprint('get_user_id', __name__)
 def getUserId():
 	if request.method == 'PUT':
 		input = request.get_json().get('input')
-		if isProperEmail(input):
-			user = User.query.filter_by(email=input).first()
-		else:
-			user = User.query.filter_by(username=input).first()
+		user = User.query.filter_by(email=input).first()
 		if user is None:
 			return jsonify('User does not exist!')
 		return jsonify(userid=user.userid)
