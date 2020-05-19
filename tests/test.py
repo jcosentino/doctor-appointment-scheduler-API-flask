@@ -16,11 +16,17 @@ def test_isProperUsername():
     invalid_username2 = 'ab' # too short
     invalid_username3 = '1user123' # begins withnumeric
     invalid_username4 = 'user123!#' # special characters
+    invalid_username5 = 'User123' # capital letter
+    invalid_username6 = 'usEr123' # capital letter
+    invalid_username7 = '' # empty
     assert isProperUsername(valid_username1) is True
     assert isProperUsername(invalid_username1) is False
     assert isProperUsername(invalid_username2) is False
     assert isProperUsername(invalid_username3) is False
     assert isProperUsername(invalid_username4) is False
+    assert isProperUsername(invalid_username5) is False
+    assert isProperUsername(invalid_username6) is False
+    assert isProperUsername(invalid_username7) is False
 
 def test_isProperEmail():
     valid_email1 = 'test@example.com'
@@ -53,10 +59,14 @@ def test_isProperSecurityQuestion():
     valid_id2 = 2
     valid_id3 = 3
     invalid_id1 = 'test' # wrong type
+    invalid_id2 = 4 # out of range
+    invalid_id3 = 0 # out of range
     assert isProperSecurityQuestion(valid_id1) is True
     assert isProperSecurityQuestion(valid_id2) is True
     assert isProperSecurityQuestion(valid_id3) is True
     assert isProperSecurityQuestion(invalid_id1) is False
+    assert isProperSecurityQuestion(invalid_id2) is False
+    assert isProperSecurityQuestion(invalid_id3) is False
 
 def test_isProperSecurityAnswer():
     valid_answer1 = 'Here is a valid answer'
