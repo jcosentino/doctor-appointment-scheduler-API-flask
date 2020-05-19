@@ -19,8 +19,6 @@ def changeSecQues(userid):
                   return jsonify('Security question has been updated!')
             else:
                   return jsonify('Security question could not be updated.')
-      else:
-            return jsonify('Unsupported HTTP method!')
 
 @security_question.route('/changeSecAns/<int:userid>', methods=['PATCH'])
 def changeSecAns(userid):
@@ -34,8 +32,7 @@ def changeSecAns(userid):
                   return jsonify('Security answer has been updated!')
             else:
                   return jsonify('Security answer could not be updated.')
-      else:
-            return jsonify('Unsupported HTTP method!')
+
 
 @security_question.route('/forgotPassword', methods=['PATCH'])
 def forgotPassword():
@@ -55,5 +52,4 @@ def forgotPassword():
                   user.lastUpdated = datetime.now()
                   db.session.commit()
                   return jsonify('Password has been updated!') 
-      else:
-            return jsonify('Unsupported HTTP method!')
+

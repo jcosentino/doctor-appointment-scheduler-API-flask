@@ -55,6 +55,3 @@ def registerUser():
 			db.session.add(profile)
 			db.session.commit()
 			return jsonify('Registration success!')
-		return jsonify('Registration failed!')
-	else:
-		return jsonify('Unsupported HTTP method!')

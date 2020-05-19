@@ -15,4 +15,3 @@ def getUserId():
 		if user is None:
 			return jsonify('User does not exist!')
 		return jsonify(userid=user.userid)
-	return jsonify('Unsupported HTTP method!')

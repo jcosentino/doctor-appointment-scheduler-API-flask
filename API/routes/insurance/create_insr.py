@@ -26,5 +26,3 @@ def createInsurance():
 		db.session.add(insurance)
 		db.session.commit()
 		return jsonify('Registration success!')
-	else:
-		return jsonify('Unsupported HTTP method!')

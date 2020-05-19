@@ -73,5 +73,3 @@ def profile(userid):
 		profile.lastUpdated = datetime.now()
 		db.session.commit()
 		return jsonify('User profile has been updated!')
-	else:
-		return jsonify('Unsupported HTTP method!')

@@ -54,5 +54,3 @@ def appointment(appointmentid):
 		db.session.delete(appointment)
 		db.session.commit()
 		return jsonify('Appointment has been deleted!')
-	else:
-		return jsonify('Unsupported HTTP method!')

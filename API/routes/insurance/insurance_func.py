@@ -51,5 +51,3 @@ def insurance(insuranceid):
 		db.session.delete(insurance)
 		db.session.commit()
 		return jsonify('Insurance has been deleted!')
-	else:
-		return jsonify('Unsupported HTTP method!')

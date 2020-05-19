@@ -18,4 +18,3 @@ def authenticate():
 		if user is None or (check_password_hash(user.password, password) is False):
 			return jsonify('Authentication failed!')
 		return jsonify('Authentication succeeded!')
-	return jsonify('Unsupported HTTP method!')

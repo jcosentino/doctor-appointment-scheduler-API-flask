@@ -16,4 +16,3 @@ def registerInsurance(userid):
 		profile.insuranceid = insuranceid
 		db.session.commit()
 		return jsonify('Insurance successfully applied.')
-	return jsonify('Unsupported HTTP method!')

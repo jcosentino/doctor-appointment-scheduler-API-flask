@@ -12,4 +12,3 @@ def findAppointment():
 		if appointment is None:
 			return jsonify('That appointment does not exist!')
 		return jsonify(appointmentid=appointment.appointmentid)
-	return jsonify('Unsupported HTTP method!')

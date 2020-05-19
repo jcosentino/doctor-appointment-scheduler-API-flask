@@ -12,4 +12,4 @@ def toggleAdmin(userid):
 		user.isadmin = True if user.isadmin is False else False
 		db.session.commit()
 		return jsonify('User\'s administrative privileges have been changed!')
-	return jsonify('Unsupported HTTP method!')
+

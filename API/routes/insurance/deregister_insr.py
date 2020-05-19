@@ -14,4 +14,3 @@ def deregisterInsurance(userid):
 		profile.insuranceid = None
 		db.session.commit()
 		return jsonify('Insurance successfully deregistered!')
-	return jsonify('Unsupported HTTP method!')

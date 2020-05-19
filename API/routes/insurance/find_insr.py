@@ -12,4 +12,3 @@ def findInsurance():
 		if insurance is None:
 			return jsonify('That insurance company does not exist!')
 		return jsonify(insuranceid=insurance.insuranceid)
-	return jsonify('Unsupported HTTP method!')

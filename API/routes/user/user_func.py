@@ -63,5 +63,3 @@ def user(userid):
 		db.session.delete(profile)
 		db.session.commit()
 		return jsonify('User account has been deleted!')
-	else:
-		return jsonify('Unsupported HTTP method!')

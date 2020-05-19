@@ -18,4 +18,3 @@ def cancelAppointment(userid):
 		profile.appointmentid = None
 		db.session.commit()
 		return jsonify('Appointment canceled!')
-	return jsonify('Unsupported HTTP method!')

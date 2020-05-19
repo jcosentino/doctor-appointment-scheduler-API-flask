@@ -22,5 +22,3 @@ def createAppt():
 		db.session.add(appointment)
 		db.session.commit()
 		return jsonify('Registration success!')
-	else:
-		return jsonify('Unsupported HTTP method!')

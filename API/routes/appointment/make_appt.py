@@ -18,4 +18,3 @@ def makeAppointment(userid):
 		profile.appointmentid = appointmentid
 		db.session.commit()
 		return jsonify('Appointment successfully booked.')
-	return jsonify('Unsupported HTTP method!')
