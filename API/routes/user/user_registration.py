@@ -35,8 +35,8 @@ def registerUser():
 			return jsonify('A user already exists with the email!')
 		else:
 			user = User(email=email, 
-						password=password, 
-						createdDate=createdDate, 
+						password=password,
+						createdDate=createdDate,
 						lastUpdated=lastUpdated,
 						sec_ques_num=sec_ques_num,
 						sec_ques_ans=sec_ques_ans)
