@@ -2,7 +2,7 @@
 
 ## Introduction
 
-> This application serves as the Python backend for [Angular front-end](https://github.com/jcosentino/doctor-appointment-scheduler-angular) of the doctor appointment scheulder or the [ReactJS variant](https://github.com/jcosentino/doctor-appointment-scheduler-reactjs)
+> This application serves as the Python backend for a doctor appointment scheduler
 
 ## Installation
 
@@ -17,10 +17,6 @@
 > > > doc_appt_schema
 
 > > > Alternatively, you can add the "doc_appt_schema.sql" file in the root folder
-
-> Clone these apps:
-> > https://github.com/jcosentino/doctor-appointment-scheduler-angular
-> > https://github.com/jcosentino/doctor-appointment-scheduler-reactjs
 
 > Run:
 
